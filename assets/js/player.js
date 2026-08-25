@@ -904,10 +904,37 @@
     }
 
     /* ========== Error Handling ========== */
+    // Multi-source fallback: pages can declare alternates via
+    // <video data-src="primary" data-alt-sources="url1|url2"> — on load/play
+    // failure we walk the list before showing the error overlay.
+    var sourceFallbackList = [];
+    var sourceFallbackIndex = -1; // -1 = primary source
+
+    function initSourceFallback(video) {
+        try {
+            var alts = (video.getAttribute('data-alt-sources') || '').split('|');
+            sourceFallbackList = alts.map(function (s) { return s.trim(); }).filter(Boolean);
+        } catch (e) { sourceFallbackList = []; }
+        sourceFallbackIndex = -1;
+    }
+
+    function tryNextSource() {
+        var video = elements.video;
+        if (!video) { return false; }
+        var next = sourceFallbackIndex + 1;
+        if (next >= sourceFallbackList.length) { return false; }
+        sourceFallbackIndex = next;
+        showNotification('Trying backup source ' + (next + 1) + '…', 2500);
+        video.src = sourceFallbackList[next];
+        video.load();
+        video.play().catch(function () {});
+        return true;
+    }
+
     function handleError(e) {
         var video = elements.video;
         var message = 'An error occurred during playback.';
-        
+
         switch (video.error ? video.error.code : 0) {
             case 1: message = 'Video loading aborted.'; break;
             case 2: message = 'Network error. Check your connection.'; break;
@@ -915,7 +942,9 @@
             case 4: message = 'Video format not supported.'; break;
             default: message = 'Unable to load this video.'; break;
         }
-        
+
+        // Walk the fallback chain before giving up
+        if (tryNextSource()) { return; }
         showPlayerError(message);
     }
 
@@ -1134,6 +1163,7 @@
 
     /* ========== Native Video Player ========== */
     function buildNativeVideoPlayer(video, src) {
+        initSourceFallback(video);
         video.src = src;
         setupVideoEvents(video);
     }
@@ -1142,6 +1172,36 @@
         video.addEventListener('loadedmetadata', handleMetadata);
         video.addEventListener('canplay', hideLoading);
         video.addEventListener('error', handleError);
+        // Expose native <track> subtitle/caption tracks in the settings menu
+        video.addEventListener('loadedmetadata', function () {
+            try {
+                var tracks = video.textTracks || [];
+                if (elements.subtitleOptions && tracks.length > 0) {
+                    for (var i = 0; i < tracks.length; i++) {
+                        (function (idx) {
+                            var track = tracks[idx];
+                            if (track.mode === 'disabled') { track.mode = 'hidden'; }
+                            var label = track.label || track.language || ('Track ' + (idx + 1));
+                            if (elements.subtitleOptions.querySelector('[data-native-track="' + idx + '"]')) { return; }
+                            var btn = document.createElement('button');
+                            btn.type = 'button';
+                            btn.className = 'option-btn';
+                            btn.setAttribute('data-native-track', String(idx));
+                            btn.textContent = label;
+                            btn.addEventListener('click', function () {
+                                for (var k = 0; k < tracks.length; k++) { tracks[k].mode = (k === idx) ? 'showing' : 'hidden'; }
+                                playerState.currentSubtitle = label;
+                                elements.subtitleOptions.querySelectorAll('.option-btn').forEach(function (b) {
+                                    b.classList.toggle('active', b === btn);
+                                });
+                                showNotification('Subtitles: ' + label);
+                            });
+                            elements.subtitleOptions.appendChild(btn);
+                        })(i);
+                    }
+                }
+            } catch (e) { /* textTracks unsupported */ }
+        });
         video.play().catch(function() {});
     }
 

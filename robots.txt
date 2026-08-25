@@ -15,4 +15,4 @@ Allow: /sitemap.php
 Allow: /rss.php
 
 # Sitemap location
-Sitemap: https://bdmoviehub.gamer.gd/sitemap.php
+Sitemap: https://bdmoviehub.gamer.gd/sitemap.xml

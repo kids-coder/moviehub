@@ -96,7 +96,7 @@ outputJsonLd($anime, 'anime');
     <div class="container">
         <div class="movie-detail-grid">
             <div class="movie-poster">
-                <img src="<?php echo htmlspecialchars($anPoster, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php e($anTitle); ?>">
+                <img loading="lazy" src="<?php echo htmlspecialchars($anPoster, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php e($anTitle); ?>">
                 <button class="btn btn-outline fav-btn" style="width:100%; margin-top:10px;"
                         data-type="anime" data-id="<?php e($anId); ?>" data-title="<?php e($anTitle); ?>">
                     <i class="far fa-heart"></i> Favorite
@@ -154,6 +154,26 @@ outputJsonLd($anime, 'anime');
 
 <?php
 $epStreamUrl = ($currentEp && isset($currentEp['stream_url'])) ? $currentEp['stream_url'] : '';
+
+// Optional backup sources (data-alt-sources) and native subtitle tracks.
+// Admins can add "alt_sources" (array) on the anime/episode and
+// "subtitle_tracks" (label/lang/src arrays) fields.
+$__altRaw = array();
+if ($currentEp && isset($currentEp['alt_sources']) && is_array($currentEp['alt_sources'])) { $__altRaw = $currentEp['alt_sources']; }
+elseif (isset($anime['alt_sources']) && is_array($anime['alt_sources'])) { $__altRaw = $anime['alt_sources']; }
+$altSources = array();
+foreach ($__altRaw as $__as) {
+    if (is_string($__as) && trim($__as) !== '' && $__as !== $epStreamUrl) { $altSources[] = trim($__as); }
+}
+$__stRaw = array();
+if (isset($anime['subtitle_tracks']) && is_array($anime['subtitle_tracks'])) { $__stRaw = $anime['subtitle_tracks']; }
+elseif ($currentEp && isset($currentEp['subtitle_tracks']) && is_array($currentEp['subtitle_tracks'])) { $__stRaw = $currentEp['subtitle_tracks']; }
+$subtitleTracks = array();
+foreach ($__stRaw as $__st) {
+    if (isset($__st['src'], $__st['lang']) && is_string($__st['src']) && trim($__st['src']) !== '') {
+        $subtitleTracks[] = array('src' => trim($__st['src']), 'lang' => substr(trim($__st['lang']), 0, 10), 'label' => isset($__st['label']) ? $__st['label'] : strtoupper(substr(trim($__st['lang']), 0, 10)));
+    }
+}
 $epNum = $currentEp && isset($currentEp['episode_number']) ? $currentEp['episode_number'] : $epNum;
 $epTitle = $currentEp && isset($currentEp['title']) ? $currentEp['title'] : '';
 ?>
@@ -166,7 +186,11 @@ $epTitle = $currentEp && isset($currentEp['title']) ? $currentEp['title'] : '';
         </div>
         <div class="player-wrapper">
             <div class="player-container">
-                <video id="video-player" data-src="<?php echo htmlspecialchars($epStreamUrl, ENT_QUOTES, 'UTF-8'); ?>" controls preload="metadata" playsinline></video>
+                <video id="video-player" data-src="<?php echo htmlspecialchars($epStreamUrl, ENT_QUOTES, 'UTF-8'); ?>"<?php if (!empty($altSources)): ?> data-alt-sources="<?php echo htmlspecialchars(implode('|', $altSources), ENT_QUOTES, 'UTF-8'); ?>"<?php endif; ?> controls preload="metadata" playsinline>
+                    <?php foreach ($subtitleTracks as $st): ?>
+                    <track kind="subtitles" label="<?php e($st['label']); ?>" srclang="<?php e($st['lang']); ?>" src="<?php echo htmlspecialchars($st['src'], ENT_QUOTES, 'UTF-8'); ?>">
+                    <?php endforeach; ?>
+                </video>
                 <div class="player-loading">
                     <div class="player-spinner"></div>
                 </div>
@@ -208,7 +232,7 @@ $epTitle = $currentEp && isset($currentEp['title']) ? $currentEp['title'] : '';
         <!-- Report broken video -->
         <div style="display:flex; justify-content:flex-end; margin-top:14px;">
             <button class="btn btn-outline btn-sm" id="report-broken-btn">
-                <i class="fas fa-flag"></i> Report Broken Video
+                <i class="fas fa-flag"></i> <?php echo t('Report Broken Video'); ?>
             </button>
         </div>
         <div id="report-form" style="display:none; margin-top:14px; padding:16px; background:var(--card); border-radius:8px; max-width:500px;">
@@ -329,7 +353,7 @@ $epTitle = $currentEp && isset($currentEp['title']) ? $currentEp['title'] : '';
             <?php foreach ($related as $a): ?>
                 <a href="<?php e(BASE_URL); ?>/anime-watch.php?slug=<?php echo urlencode(isset($a['slug']) ? $a['slug'] : ''); ?>" class="movie-card">
                     <div class="card-poster">
-                        <img src="<?php echo htmlspecialchars(isset($a['poster']) ? $a['poster'] : '', ENT_QUOTES, 'UTF-8'); ?>" alt="<?php e(isset($a['title']) ? $a['title'] : 'Anime'); ?>" loading="lazy">
+                        <img loading="lazy" src="<?php echo htmlspecialchars(isset($a['poster']) ? $a['poster'] : '', ENT_QUOTES, 'UTF-8'); ?>" alt="<?php e(isset($a['title']) ? $a['title'] : 'Anime'); ?>" loading="lazy">
                         <?php if (!empty($a['rating'])): ?>
                             <span class="card-badge rating"><i class="fas fa-star"></i> <?php e($a['rating']); ?></span>
                         <?php endif; ?>

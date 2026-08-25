@@ -33,7 +33,7 @@ $ogUrl = isset($ogUrl) ? $ogUrl : currentUrl();
 $seoKeywords = !empty($settings['seo_keywords']) ? $settings['seo_keywords'] : 'Bangla movies, movies, series, anime, trailers, genres';
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?php echo uiLang() === 'bn' ? 'bn' : 'en'; ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -102,19 +102,19 @@ $seoKeywords = !empty($settings['seo_keywords']) ? $settings['seo_keywords'] : '
 <nav class="navbar">
     <div class="nav-inner">
         <?php if (!empty($logoUrl)): ?>
-            <a href="<?php e(BASE_URL); ?>/index.php" class="nav-logo"><img src="<?php e($logoUrl); ?>" alt="<?php e(isset($settings['site_name']) ? $settings['site_name'] : SITE_NAME); ?>" style="height:36px; max-width:160px; object-fit:contain;"></a>
+            <a href="<?php e(BASE_URL); ?>/index.php" class="nav-logo"><img loading="lazy" src="<?php e($logoUrl); ?>" alt="<?php e(isset($settings['site_name']) ? $settings['site_name'] : SITE_NAME); ?>" style="height:36px; max-width:160px; object-fit:contain;"></a>
         <?php else: ?>
             <a href="<?php e(BASE_URL); ?>/index.php" class="nav-logo">BD<span>Movie</span><span class="accent">Hub</span></a>
         <?php endif; ?>
         <ul class="nav-links">
-            <li><a href="<?php e(BASE_URL); ?>/index.php" class="<?php echo $pageSection === 'home' ? 'active' : ''; ?>">Home</a></li>
-            <li><a href="<?php e(BASE_URL); ?>/search.php" class="<?php echo $pageSection === 'movies' ? 'active' : ''; ?>">Movies</a></li>
-            <li><a href="<?php e(BASE_URL); ?>/series.php" class="<?php echo $pageSection === 'series' ? 'active' : ''; ?>">Series</a></li>
-            <li><a href="<?php e(BASE_URL); ?>/anime.php" class="<?php echo $pageSection === 'anime' ? 'active' : ''; ?>">Anime</a></li>
-            <li><a href="<?php e(BASE_URL); ?>/trending.php" class="<?php echo $pageSection === 'trending' ? 'active' : ''; ?>">Trending</a></li>
-            <li><a href="<?php e(BASE_URL); ?>/anime-schedule.php" class="<?php echo $pageSection === 'schedule' ? 'active' : ''; ?>">Schedule</a></li>
-            <li><a href="<?php e(BASE_URL); ?>/genres.php" class="<?php echo $pageSection === 'genres' ? 'active' : ''; ?>">Genres</a></li>
-            <li><a href="<?php e(BASE_URL); ?>/request.php" class="<?php echo $pageSection === 'request' ? 'active' : ''; ?>">Request</a></li>
+            <li><a href="<?php e(BASE_URL); ?>/index.php" class="<?php echo $pageSection === 'home' ? 'active' : ''; ?>"><?php echo t('Home'); ?></a></li>
+            <li><a href="<?php e(BASE_URL); ?>/search.php" class="<?php echo $pageSection === 'movies' ? 'active' : ''; ?>"><?php echo t('Movies'); ?></a></li>
+            <li><a href="<?php e(BASE_URL); ?>/series.php" class="<?php echo $pageSection === 'series' ? 'active' : ''; ?>"><?php echo t('Series'); ?></a></li>
+            <li><a href="<?php e(BASE_URL); ?>/anime.php" class="<?php echo $pageSection === 'anime' ? 'active' : ''; ?>"><?php echo t('Anime'); ?></a></li>
+            <li><a href="<?php e(BASE_URL); ?>/trending.php" class="<?php echo $pageSection === 'trending' ? 'active' : ''; ?>"><?php echo t('Trending'); ?></a></li>
+            <li><a href="<?php e(BASE_URL); ?>/anime-schedule.php" class="<?php echo $pageSection === 'schedule' ? 'active' : ''; ?>"><?php echo t('Schedule'); ?></a></li>
+            <li><a href="<?php e(BASE_URL); ?>/genres.php" class="<?php echo $pageSection === 'genres' ? 'active' : ''; ?>"><?php echo t('Genres'); ?></a></li>
+            <li><a href="<?php e(BASE_URL); ?>/request.php" class="<?php echo $pageSection === 'request' ? 'active' : ''; ?>"><?php echo t('Request'); ?></a></li>
         </ul>
         <div class="nav-actions">
             <div class="nav-search-wrap">
@@ -123,6 +123,8 @@ $seoKeywords = !empty($settings['seo_keywords']) ? $settings['seo_keywords'] : '
             </div>
             <a href="<?php e(BASE_URL); ?>/favorites.php" class="nav-action-btn" title="My Favorites" aria-label="Favorites"><i class="fas fa-heart"></i></a>
             <button class="theme-toggle" aria-label="Toggle theme" title="Toggle theme"><i class="fas fa-sun"></i></button>
+            <button class="theme-toggle" id="lowdata-toggle" aria-label="Toggle low-data mode" title="Low-data mode"><i class="fas fa-feather"></i></button>
+            <a href="<?php echo uiLang() === 'bn' ? langSwitchUrl('en') : langSwitchUrl('bn'); ?>" class="nav-action-btn" title="<?php echo uiLang() === 'bn' ? 'Switch to English' : 'বাংলায় দেখুন'; ?>" aria-label="Language switcher" style="font-weight:700; font-size:12px;"><?php echo uiLang() === 'bn' ? 'EN' : 'বাং'; ?></a>
             <button class="hamburger" aria-label="Menu"><i class="fas fa-bars"></i></button>
         </div>
     </div>
@@ -131,19 +133,19 @@ $seoKeywords = !empty($settings['seo_keywords']) ? $settings['seo_keywords'] : '
 <!-- Mobile Menu -->
 <div class="menu-overlay"></div>
 <div class="mobile-menu">
-    <a href="<?php e(BASE_URL); ?>/index.php">Home</a>
-    <a href="<?php e(BASE_URL); ?>/search.php">Movies</a>
-    <a href="<?php e(BASE_URL); ?>/series.php">Series</a>
-    <a href="<?php e(BASE_URL); ?>/anime.php">Anime</a>
-    <a href="<?php e(BASE_URL); ?>/trending.php">Trending</a>
-    <a href="<?php e(BASE_URL); ?>/top-rated.php">Top Rated</a>
-    <a href="<?php e(BASE_URL); ?>/genres.php">Genres</a>
-    <a href="<?php e(BASE_URL); ?>/anime-schedule.php">Schedule</a>
-    <a href="<?php e(BASE_URL); ?>/favorites.php">My Favorites</a>
-    <a href="<?php e(BASE_URL); ?>/request.php">Request a Title</a>
-    <a href="<?php e(BASE_URL); ?>/about.php">About Us</a>
-    <a href="<?php e(BASE_URL); ?>/contact.php">Contact</a>
-    <a href="<?php e(BASE_URL); ?>/search.php">Search</a>
+    <a href="<?php e(BASE_URL); ?>/index.php"><?php echo t('Home'); ?></a>
+    <a href="<?php e(BASE_URL); ?>/search.php"><?php echo t('Movies'); ?></a>
+    <a href="<?php e(BASE_URL); ?>/series.php"><?php echo t('Series'); ?></a>
+    <a href="<?php e(BASE_URL); ?>/anime.php"><?php echo t('Anime'); ?></a>
+    <a href="<?php e(BASE_URL); ?>/trending.php"><?php echo t('Trending'); ?></a>
+    <a href="<?php e(BASE_URL); ?>/top-rated.php"><?php echo t('Top Rated'); ?></a>
+    <a href="<?php e(BASE_URL); ?>/genres.php"><?php echo t('Genres'); ?></a>
+    <a href="<?php e(BASE_URL); ?>/anime-schedule.php"><?php echo t('Schedule'); ?></a>
+    <a href="<?php e(BASE_URL); ?>/favorites.php"><?php echo t('My Favorites'); ?></a>
+    <a href="<?php e(BASE_URL); ?>/request.php"><?php echo t('Request a Title'); ?></a>
+    <a href="<?php e(BASE_URL); ?>/about.php"><?php echo t('About Us'); ?></a>
+    <a href="<?php e(BASE_URL); ?>/contact.php"><?php echo t('Contact'); ?></a>
+    <a href="<?php echo uiLang() === 'bn' ? langSwitchUrl('en') : langSwitchUrl('bn'); ?>"><?php echo uiLang() === 'bn' ? '🌐 English' : '🌐 বাংলা'; ?></a>
     <?php if (!empty($pages)): ?>
         <?php foreach ($pages as $p): ?>
             <a href="<?php e(BASE_URL); ?>/page.php?slug=<?php echo urlencode(isset($p['slug']) ? $p['slug'] : ''); ?>"><?php e(isset($p['title']) ? $p['title'] : 'Page'); ?></a>

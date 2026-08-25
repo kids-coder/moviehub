@@ -10,6 +10,28 @@
     var THEME_KEY = 'moviehub-theme';
     var FAV_KEY = 'moviehub-favs';
     var HISTORY_KEY = 'moviehub-history';
+    var LOWDATA_KEY = 'bdmh_lowdata';
+
+    /* ---------- Low-Data Mode ---------- */
+    function applyLowData(on) {
+        document.body.classList.toggle('low-data', !!on);
+        var btn = document.getElementById('lowdata-toggle');
+        if (btn) {
+            btn.classList.toggle('active', !!on);
+            var icon = btn.querySelector('i');
+            if (icon) { icon.className = on ? 'fas fa-feather-pointed' : 'fas fa-feather'; }
+        }
+    }
+    window.isLowDataMode = function () {
+        try { return localStorage.getItem(LOWDATA_KEY) === '1'; } catch (e) { return false; }
+    };
+    window.setLowDataMode = function (on) {
+        try { localStorage.setItem(LOWDATA_KEY, on ? '1' : '0'); } catch (e) {}
+        // Mirror to cookie so PHP can skip heavy images server-side
+        document.cookie = LOWDATA_KEY + '=' + (on ? '1' : '0') + ';path=/;max-age=31536000;samesite=lax';
+        applyLowData(on);
+        if (window.showToast) { showToast(on ? 'Low-data mode ON — images reduced' : 'Low-data mode OFF', on ? 'success' : ''); }
+    };
 
     /* ---------- Theme Toggle ---------- */
     function getTheme() {
@@ -38,6 +60,16 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         setTheme(getTheme());
+        // Low-data mode: honor server-side cookie state, wire the toggle button
+        var lowOn = false;
+        try { lowOn = document.cookie.indexOf('bdmh_lowdata=1') !== -1 || localStorage.getItem(LOWDATA_KEY) === '1'; } catch (e) {}
+        applyLowData(lowOn);
+        var lowBtn = document.getElementById('lowdata-toggle');
+        if (lowBtn) {
+            lowBtn.addEventListener('click', function () {
+                window.setLowDataMode(!window.isLowDataMode());
+            });
+        }
         // The actual theme toggle is the <button class="theme-toggle">.
         // The Favorites link now uses a separate class (.nav-action-btn),
         // so it no longer collides with the theme toggle.
@@ -195,6 +227,51 @@
         // Initial render on homepage
         if (document.getElementById('recently-watched')) {
             window.renderHistory('recently-watched');
+        }
+    });
+
+    /* ---------- My Watchlist (homepage favorites preview) ---------- */
+    window.renderWatchlist = function (containerId) {
+        var container = document.getElementById(containerId);
+        if (!container) { return; }
+        var favs = getFavs();
+        var items = [];
+        // Resolve favorite ids against links already on the page is unreliable;
+        // instead we render from the favorites page data embedded by the page
+        // via window.BDMH_FAV_META when provided, else show count-only state.
+        var meta = (typeof window.BDMH_FAV_META === 'object' && window.BDMH_FAV_META) ? window.BDMH_FAV_META : {};
+        ['movies', 'anime'].forEach(function (kind) {
+            (favs[kind] || []).forEach(function (id) {
+                var info = meta[id];
+                if (info && info.url && info.title) {
+                    items.push(info);
+                }
+            });
+        });
+        var section = document.getElementById('watchlist-section');
+        if (items.length === 0) {
+            container.innerHTML = '';
+            if (section) { section.style.display = 'none'; }
+            return;
+        }
+        if (section) { section.style.display = 'block'; }
+        var html = '';
+        for (var i = 0; i < Math.min(items.length, 12); i++) {
+            var it = items[i];
+            html += '<a href="' + escapeAttr(it.url) + '" class="movie-card">' +
+                '<div class="card-poster">' +
+                    '<img src="' + escapeAttr(it.poster || '') + '" alt="' + escapeAttr(it.title || '') + '" loading="lazy">' +
+                    '<div class="card-overlay"><button class="card-play-btn" aria-label="Play"><i class="fas fa-play"></i></button></div>' +
+                '</div>' +
+                '<div class="card-info"><div class="card-title">' + escapeHtml(it.title || '') + '</div>' +
+                (it.meta ? '<div class="card-meta"><span>' + escapeHtml(it.meta) + '</span></div>' : '') +
+                '</div></a>';
+        }
+        container.innerHTML = html;
+    };
+    document.addEventListener('DOMContentLoaded', function () {
+        if (document.getElementById('watchlist-row')) {
+            window.renderWatchlist('watchlist-row');
         }
     });
 

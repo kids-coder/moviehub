@@ -81,9 +81,42 @@ usort($popularBD, function ($a, $b) {
 });
 $popularBD = array_slice($popularBD, 0, 10);
 
+// Recently Added: newest by created_at (same as recent, but capped for the row)
+$recentlyAdded = array_slice($movies, 0, 10);
+
+// Coming Soon: unreleased / upcoming titles (year in the future or flagged upcoming)
+$comingSoon = array();
+$__nowYear = (int)date('Y');
+foreach ($movies as $m) {
+    $__y = isset($m['year']) ? intval($m['year']) : 0;
+    $__st = strtolower(isset($m['status']) ? $m['status'] : '');
+    if ($__y > $__nowYear || $__st === 'upcoming' || $__st === 'coming_soon') { $comingSoon[] = $m; }
+}
+$comingSoon = array_slice($comingSoon, 0, 10);
+
 include __DIR__ . '/header.php';
 outputWebsiteJsonLd();
+
+// Metadata map for the localStorage-based My Watchlist preview
+$favMeta = array();
+foreach ($movies as $m) {
+    $favMeta[isset($m['id']) ? $m['id'] : ''] = array(
+        'title' => isset($m['title']) ? $m['title'] : '',
+        'poster' => isset($m['poster']) ? $m['poster'] : '',
+        'url' => BASE_URL . '/movie.php?slug=' . urlencode(isset($m['slug']) ? $m['slug'] : ''),
+        'meta' => implode(', ', array_slice((isset($m['genre']) && is_array($m['genre']) ? $m['genre'] : array()), 0, 2)),
+    );
+}
+foreach ($animeList as $a) {
+    $favMeta[isset($a['id']) ? $a['id'] : ''] = array(
+        'title' => isset($a['title']) ? $a['title'] : '',
+        'poster' => isset($a['poster']) ? $a['poster'] : '',
+        'url' => BASE_URL . '/anime-watch.php?slug=' . urlencode(isset($a['slug']) ? $a['slug'] : ''),
+        'meta' => (isset($a['episode_count']) ? $a['episode_count'] : '') . ' EPs',
+    );
+}
 ?>
+<script>window.BDMH_FAV_META = <?php echo json_encode($favMeta, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>;</script>
 
 <!-- Hero Slider -->
 <section class="hero-slider" id="hero">
@@ -139,11 +172,24 @@ outputWebsiteJsonLd();
 <section class="section" id="continue-watching-section" style="display:none; padding: 24px 0;">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title"><i class="fas fa-history" style="color:var(--primary); margin-right:6px;"></i> Continue Watching</h2>
-            <button class="section-link" id="clear-history-btn" style="background:none; border:none; color:var(--muted); cursor:pointer; font-size:13px;"><i class="fas fa-trash"></i> Clear</button>
+            <h2 class="section-title"><i class="fas fa-history" style="color:var(--primary); margin-right:6px;"></i> <?php echo t('Continue Watching'); ?></h2>
+            <button class="section-link" id="clear-history-btn" style="background:none; border:none; color:var(--muted); cursor:pointer; font-size:13px;"><i class="fas fa-trash"></i> <?php e('Clear'); ?></button>
         </div>
         <div class="scroll-row" id="recently-watched">
             <!-- Populated by features.js renderHistory() -->
+        </div>
+    </div>
+</section>
+
+<!-- My Watchlist (from localStorage favorites - only shown if user has favorites) -->
+<section class="section" id="watchlist-section" style="display:none; padding: 24px 0;">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title"><i class="fas fa-heart" style="color:#e74c3c; margin-right:6px;"></i> <?php echo t('My Favorites'); ?></h2>
+            <a href="<?php e(BASE_URL); ?>/favorites.php" class="section-link"><?php echo t('View All'); ?> <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="scroll-row" id="watchlist-row">
+            <!-- Populated by features.js renderWatchlist() -->
         </div>
     </div>
 </section>
@@ -153,7 +199,7 @@ outputWebsiteJsonLd();
 <section class="section">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title">Featured Movies</h2>
+            <h2 class="section-title"><?php echo t('Featured Movies'); ?></h2>
             <a href="<?php e(BASE_URL); ?>/search.php" class="section-link">View All <i class="fas fa-arrow-right"></i></a>
         </div>
         <div class="scroll-row">
@@ -190,7 +236,7 @@ outputWebsiteJsonLd();
 <section class="section">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title"><i class="fas fa-fire" style="color:var(--accent); margin-right:6px;"></i> Trending Now</h2>
+            <h2 class="section-title"><i class="fas fa-fire" style="color:var(--accent); margin-right:6px;"></i> <?php echo t('Trending Now'); ?></h2>
             <a href="<?php e(BASE_URL); ?>/trending.php" class="section-link">View All <i class="fas fa-arrow-right"></i></a>
         </div>
         <div class="scroll-row">
@@ -228,7 +274,7 @@ outputWebsiteJsonLd();
 <section class="section">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title">Recent Movies</h2>
+            <h2 class="section-title"><?php echo t('Recent Movies'); ?></h2>
             <a href="<?php e(BASE_URL); ?>/search.php" class="section-link">View All <i class="fas fa-arrow-right"></i></a>
         </div>
         <?php if (empty($recentMovies)): ?>
@@ -272,7 +318,7 @@ outputWebsiteJsonLd();
 <section class="section">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title"><i class="fas fa-star" style="color:#FFD700; margin-right:6px;"></i> Top Rated</h2>
+            <h2 class="section-title"><i class="fas fa-star" style="color:#FFD700; margin-right:6px;"></i> <?php echo t('Top Rated'); ?></h2>
             <a href="<?php e(BASE_URL); ?>/top-rated.php" class="section-link">View All <i class="fas fa-arrow-right"></i></a>
         </div>
         <div class="scroll-row">
@@ -309,7 +355,7 @@ outputWebsiteJsonLd();
 <section class="section">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title"><i class="fas fa-map-marker-alt" style="color:#2ecc71; margin-right:6px;"></i> Popular in Bangladesh</h2>
+            <h2 class="section-title"><i class="fas fa-map-marker-alt" style="color:#2ecc71; margin-right:6px;"></i> <?php echo t('Popular in Bangladesh'); ?></h2>
         </div>
         <div class="scroll-row">
             <?php foreach ($popularBD as $m): ?>
@@ -333,7 +379,7 @@ outputWebsiteJsonLd();
 <section class="section">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title anime-accent">Latest Anime</h2>
+            <h2 class="section-title anime-accent"><?php echo t('Latest Anime'); ?></h2>
             <a href="<?php e(BASE_URL); ?>/anime.php" class="section-link">View All <i class="fas fa-arrow-right"></i></a>
         </div>
         <?php if (empty($latestAnime)): ?>
@@ -365,6 +411,65 @@ outputWebsiteJsonLd();
                             <div class="card-meta">
                                 <span><i class="fas fa-list"></i> <?php e(isset($a['episode_count']) ? $a['episode_count'] : 0); ?> EPs</span>
                             </div>
+                        </div>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
+</section>
+
+<!-- Recently Added -->
+<?php if (!empty($recentlyAdded)): ?>
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title"><i class="fas fa-plus-circle" style="color:var(--primary); margin-right:6px;"></i> Recently Added</h2>
+            <a href="<?php e(BASE_URL); ?>/search.php?sort=newest" class="section-link"><?php echo t('View All'); ?> <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="scroll-row">
+            <?php foreach ($recentlyAdded as $m): ?>
+                <a href="<?php e(BASE_URL); ?>/movie.php?slug=<?php echo urlencode(isset($m['slug']) ? $m['slug'] : ''); ?>" class="movie-card">
+                    <div class="card-poster">
+                        <img src="<?php echo htmlspecialchars(isset($m['poster']) ? $m['poster'] : '', ENT_QUOTES, 'UTF-8'); ?>" alt="<?php e(isset($m['title']) ? $m['title'] : 'Movie'); ?>" loading="lazy">
+                        <?php if (!empty($m['quality'])): ?><span class="card-badge"><?php e($m['quality']); ?></span><?php endif; ?>
+                        <div class="card-overlay"><button class="card-play-btn"><i class="fas fa-play"></i></button></div>
+                    </div>
+                    <div class="card-info">
+                        <div class="card-title"><?php e(isset($m['title']) ? $m['title'] : 'Untitled'); ?></div>
+                        <div class="card-meta"><span><i class="far fa-calendar"></i> <?php e(isset($m['year']) ? $m['year'] : ''); ?></span></div>
+                    </div>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
+<!-- Coming Soon -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title"><i class="fas fa-hourglass-half" style="color:#9b59b6; margin-right:6px;"></i> Coming Soon</h2>
+        </div>
+        <?php if (empty($comingSoon)): ?>
+            <div class="empty-state">
+                <i class="fas fa-hourglass-half"></i>
+                <h3>Nothing Announced Yet</h3>
+                <p>No upcoming titles have been announced. Check back soon — or <a href="<?php e(BASE_URL); ?>/request.php">request a title</a>.</p>
+            </div>
+        <?php else: ?>
+            <div class="scroll-row">
+                <?php foreach ($comingSoon as $m): ?>
+                    <a href="<?php e(BASE_URL); ?>/movie.php?slug=<?php echo urlencode(isset($m['slug']) ? $m['slug'] : ''); ?>" class="movie-card">
+                        <div class="card-poster">
+                            <img src="<?php echo htmlspecialchars(isset($m['poster']) ? $m['poster'] : '', ENT_QUOTES, 'UTF-8'); ?>" alt="<?php e(isset($m['title']) ? $m['title'] : 'Movie'); ?>" loading="lazy">
+                            <span class="card-badge"><?php e(isset($m['year']) ? $m['year'] : ''); ?></span>
+                            <div class="card-overlay"><button class="card-play-btn"><i class="fas fa-play"></i></button></div>
+                        </div>
+                        <div class="card-info">
+                            <div class="card-title"><?php e(isset($m['title']) ? $m['title'] : 'Untitled'); ?></div>
+                            <div class="card-meta"><span><i class="far fa-calendar"></i> <?php e(isset($m['year']) ? $m['year'] : ''); ?></span></div>
                         </div>
                     </a>
                 <?php endforeach; ?>

@@ -20,7 +20,7 @@
         "download_url": "https://movie.ctgfun.com/disk1/English%20Movies/2026/Desert%20Warrior%20(2025)%20Hindi%20English%201080p%20WEBRip%20x264%20ESub%20%5BDDN%5D/Desert%20Warrior%20(2025)%20Hindi%20English%201080p%20WEBRip%20x264%20ESub%20%5bDDN%5d.mp4",
         "featured": true,
         "created_at": "2026-08-16",
-        "views": 34,
+        "views": 36,
         "alternate_title": "",
         "kind": "movie",
         "country": "",
@@ -29,5 +29,35 @@
         "director": "",
         "subtitles": "",
         "legal_providers": ""
+    },
+    {
+        "id": "m2",
+        "title": "hh",
+        "alternate_title": "jjj",
+        "kind": "series",
+        "slug": "hh",
+        "poster": "https://tse1.mm.bing.net/th/id/OIP.54bt0giPtlA7jF20sRdUTAAAAA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3",
+        "banner": "https://media.themoviedb.org/t/p/w600_and_h900_face/iPOn6DinuVyLY17YM9mKuPofV08.jpg",
+        "description": "",
+        "year": "2026",
+        "genre": [
+            "Action"
+        ],
+        "rating": "",
+        "duration": "",
+        "quality": "HD",
+        "status": "published",
+        "trailer": "",
+        "stream_url": "https://abyssplayer.com/wofPZF-Zf",
+        "download_url": "",
+        "featured": false,
+        "created_at": "2026-08-25",
+        "country": "bangladesh",
+        "language": "",
+        "cast": "",
+        "director": "",
+        "subtitles": "",
+        "legal_providers": "",
+        "views": 4
     }
 ]

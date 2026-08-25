@@ -1118,6 +1118,16 @@ body.light-theme .navbar { background: rgba(255, 255, 255, 0.85); }
 /* Hide live search dropdown when input loses focus (with small delay for clicks) */
 .live-search-dropdown.hide { display: none !important; }
 
+/* ---------- Low-Data Mode ----------
+   Activated via the feather button in the navbar. In low-data mode we
+   hide decorative backdrops/banners and soften posters to save bandwidth. */
+body.low-data .hero-slide { background-image: none !important; }
+body.low-data .movie-banner img,
+body.low-data .detail-banner img,
+body.low-data .anime-banner img { filter: blur(0) brightness(0.4); opacity: 0.35; }
+body.low-data img[data-src] { background: var(--card); min-height: 60px; }
+#lowdata-toggle.active { background: var(--primary); color: #fff; }
+
 @media (max-width: 768px) {
     .quick-nav-pill { font-size: 12px; padding: 6px 12px; }
     .player-title-bar { flex-direction: column; align-items: flex-start; gap: 6px; }

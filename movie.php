@@ -36,6 +36,19 @@ $mvTrailer  = isset($movie['trailer']) ? $movie['trailer'] : '';
 $mvDownload = isset($movie['download_url']) ? $movie['download_url'] : '';
 $mvViews    = isset($movie['views']) ? intval($movie['views']) : 0;
 
+// Optional backup sources (data-alt-sources) and native subtitle tracks.
+// Admins can add "alt_sources" (array) and "subtitle_tracks" (label/lang/src) fields.
+$altSources = array();
+foreach ((isset($movie['alt_sources']) && is_array($movie['alt_sources']) ? $movie['alt_sources'] : array()) as $__as) {
+    if (is_string($__as) && trim($__as) !== '' && $__as !== $mvStream) { $altSources[] = trim($__as); }
+}
+$subtitleTracks = array();
+foreach ((isset($movie['subtitle_tracks']) && is_array($movie['subtitle_tracks']) ? $movie['subtitle_tracks'] : array()) as $__st) {
+    if (isset($__st['src'], $__st['lang']) && is_string($__st['src']) && trim($__st['src']) !== '') {
+        $subtitleTracks[] = array('src' => trim($__st['src']), 'lang' => substr(trim($__st['lang']), 0, 10), 'label' => isset($__st['label']) ? $__st['label'] : strtoupper(substr(trim($__st['lang']), 0, 10)));
+    }
+}
+
 // SEO meta
 $ogTitle = $mvTitle . ' (' . $mvYear . ') - Watch Online';
 $ogDescription = truncate($mvDesc, 160);
@@ -89,7 +102,7 @@ outputJsonLd($movie, 'movie');
     <div class="container">
         <div class="movie-detail-grid">
             <div class="movie-poster">
-                <img src="<?php echo htmlspecialchars($mvPoster, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php e($mvTitle); ?>">
+                <img loading="lazy" src="<?php echo htmlspecialchars($mvPoster, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php e($mvTitle); ?>">
                 <button class="btn btn-outline fav-btn" style="width:100%; margin-top:10px;"
                         data-type="movie" data-id="<?php e($mvId); ?>" data-title="<?php e($mvTitle); ?>">
                     <i class="far fa-heart"></i> Favorite
@@ -180,7 +193,11 @@ outputJsonLd($movie, 'movie');
         </div>
         <div class="player-wrapper">
             <div class="player-container">
-                <video id="video-player" data-src="<?php echo htmlspecialchars($mvStream, ENT_QUOTES, 'UTF-8'); ?>" controls preload="metadata" playsinline></video>
+                <video id="video-player" data-src="<?php echo htmlspecialchars($mvStream, ENT_QUOTES, 'UTF-8'); ?>"<?php if (!empty($altSources)): ?> data-alt-sources="<?php echo htmlspecialchars(implode('|', $altSources), ENT_QUOTES, 'UTF-8'); ?>"<?php endif; ?> controls preload="metadata" playsinline>
+                    <?php foreach ($subtitleTracks as $st): ?>
+                    <track kind="subtitles" label="<?php e($st['label']); ?>" srclang="<?php e($st['lang']); ?>" src="<?php echo htmlspecialchars($st['src'], ENT_QUOTES, 'UTF-8'); ?>">
+                    <?php endforeach; ?>
+                </video>
                 <div class="player-loading">
                     <div class="player-spinner"></div>
                 </div>
@@ -195,7 +212,7 @@ outputJsonLd($movie, 'movie');
         <!-- Report broken video -->
         <div style="display:flex; justify-content:flex-end; margin-top:14px;">
             <button class="btn btn-outline btn-sm" id="report-broken-btn">
-                <i class="fas fa-flag"></i> Report Broken Video
+                <i class="fas fa-flag"></i> <?php echo t('Report Broken Video'); ?>
             </button>
         </div>
         <div id="report-form" style="display:none; margin-top:14px; padding:16px; background:var(--card); border-radius:8px; max-width:500px;">
@@ -279,13 +296,13 @@ outputJsonLd($movie, 'movie');
 <section class="section">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title">Related Movies</h2>
+            <h2 class="section-title"><?php echo t('Related Movies'); ?></h2>
         </div>
         <div class="card-grid">
             <?php foreach ($related as $m): ?>
                 <a href="<?php e(BASE_URL); ?>/movie.php?slug=<?php echo urlencode(isset($m['slug']) ? $m['slug'] : ''); ?>" class="movie-card">
                     <div class="card-poster">
-                        <img src="<?php echo htmlspecialchars(isset($m['poster']) ? $m['poster'] : '', ENT_QUOTES, 'UTF-8'); ?>" alt="<?php e(isset($m['title']) ? $m['title'] : 'Movie'); ?>" loading="lazy">
+                        <img loading="lazy" src="<?php echo htmlspecialchars(isset($m['poster']) ? $m['poster'] : '', ENT_QUOTES, 'UTF-8'); ?>" alt="<?php e(isset($m['title']) ? $m['title'] : 'Movie'); ?>" loading="lazy">
                         <?php if (!empty($m['quality'])): ?>
                             <span class="card-badge"><?php e($m['quality']); ?></span>
                         <?php endif; ?>

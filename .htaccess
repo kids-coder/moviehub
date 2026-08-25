@@ -24,6 +24,9 @@ AddDefaultCharset UTF-8
     RewriteRule ^movie/([A-Za-z0-9_-]+)/?$ movie.php?slug=$1 [L,QSA]
     RewriteRule ^series/([A-Za-z0-9_-]+)/?$ series.php?slug=$1 [L,QSA]
     RewriteRule ^anime/([A-Za-z0-9_-]+)/?$ anime-watch.php?slug=$1 [L,QSA]
+    # Crawler-friendly aliases: /sitemap.xml and /rss.xml
+    RewriteRule ^sitemap\.xml$ sitemap.php [L]
+    RewriteRule ^rss\.xml$ rss.php [L]
 </IfModule>
 
 # Never serve application source, local configuration, or session files.
