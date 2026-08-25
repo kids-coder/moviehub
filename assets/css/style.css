@@ -1126,7 +1126,6 @@ body.low-data .movie-banner img,
 body.low-data .detail-banner img,
 body.low-data .anime-banner img { filter: blur(0) brightness(0.4); opacity: 0.35; }
 body.low-data img[data-src] { background: var(--card); min-height: 60px; }
-#lowdata-toggle.active { background: var(--primary); color: #fff; }
 
 @media (max-width: 768px) {
     .quick-nav-pill { font-size: 12px; padding: 6px 12px; }
@@ -1134,3 +1133,159 @@ body.low-data img[data-src] { background: var(--card); min-height: 60px; }
     .share-options { flex-direction: column; }
     .share-link { justify-content: center; }
 }
+
+/* ============================================================
+   A-Z Directory (az.php)
+   ============================================================ */
+.az-nav {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 28px;
+}
+.az-letter {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 34px; height: 34px; padding: 0 10px;
+    border-radius: 8px; background: rgba(255,255,255,0.06);
+    color: var(--text); font-weight: 700; font-size: 13px;
+    text-decoration: none; border: 1px solid rgba(255,255,255,0.08);
+    transition: all 0.2s ease;
+}
+.az-letter:hover { background: var(--primary); color: #fff; transform: translateY(-1px); }
+.az-letter.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.az-group { margin-bottom: 30px; }
+.az-group-title { margin-bottom: 14px; }
+.az-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+.az-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    color: var(--text); text-decoration: none; font-size: 13px;
+    transition: all 0.2s ease;
+}
+.az-item:hover { border-color: var(--primary); transform: translateX(3px); }
+.az-item-type {
+    flex-shrink: 0; font-size: 10px; font-weight: 800; letter-spacing: 0.5px;
+    padding: 2px 7px; border-radius: 5px; text-transform: uppercase;
+}
+.az-item-type.is-movie { background: rgba(108,99,255,0.18); color: var(--primary); }
+.az-item-type.is-anime { background: rgba(46,204,113,0.15); color: var(--anime-color); }
+.az-item-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.az-item-year { color: var(--muted); font-size: 11px; flex-shrink: 0; }
+
+/* ============================================================
+   TV Guide (tv-guide.php)
+   ============================================================ */
+.tvguide-strip {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 8px;
+}
+.tvguide-day {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 12px 6px; border-radius: 12px; text-align: center;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: var(--text); text-decoration: none; transition: all 0.2s ease;
+}
+.tvguide-day:hover { border-color: var(--anime-color); transform: translateY(-2px); }
+.tvguide-day.active { background: var(--anime-color); border-color: var(--anime-color); color: #fff; }
+.tvguide-day.active .tvguide-day-count { color: rgba(255,255,255,0.85); }
+.tvguide-day-name { font-weight: 800; font-size: 13px; }
+.tvguide-day-date { font-size: 11px; opacity: 0.75; }
+.tvguide-day-count { font-size: 10px; color: var(--muted); font-weight: 600; }
+.tvguide-list { display: flex; flex-direction: column; gap: 10px; }
+.tvguide-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 16px; border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+}
+.tvguide-time {
+    font-weight: 800; font-size: 15px; color: var(--anime-color);
+    min-width: 58px; text-align: center;
+}
+.tvguide-poster { flex-shrink: 0; }
+.tvguide-poster img {
+    width: 44px; height: 62px; object-fit: cover; border-radius: 8px; display: block;
+}
+.tvguide-info { flex: 1; min-width: 0; }
+.tvguide-title {
+    display: block; color: var(--text); font-weight: 700; font-size: 15px;
+    text-decoration: none; margin-bottom: 4px;
+}
+.tvguide-title:hover { color: var(--anime-color); }
+.tvguide-meta { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--muted); }
+.tvguide-meta i { margin-right: 3px; font-size: 10px; }
+.tvguide-watch { flex-shrink: 0; }
+.schedule-day.is-today { border-color: var(--anime-color); box-shadow: 0 0 0 1px var(--anime-color) inset; }
+
+/* ============================================================
+   Download Center (download.php)
+   ============================================================ */
+.dl-badge {
+    top: auto !important; bottom: 8px; left: 8px; right: auto !important;
+    background: rgba(241,196,15,0.92); color: #111;
+}
+
+/* ============================================================
+   Top 10 Charts (top10.php)
+   ============================================================ */
+.top10-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.top10-col .section-title { margin-bottom: 18px; }
+.top10-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; counter-reset: rank; }
+.top10-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    transition: all 0.2s ease;
+}
+.top10-item:hover { border-color: var(--primary); transform: translateX(4px); }
+.top10-rank {
+    width: 30px; height: 30px; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 50%; font-weight: 900; font-size: 14px;
+    background: rgba(255,255,255,0.09); color: var(--text);
+}
+.top10-rank.gold { background: linear-gradient(135deg, #f1c40f, #e67e22); color: #111; }
+.top10-rank.silver { background: linear-gradient(135deg, #bdc3c7, #95a5a6); color: #111; }
+.top10-rank.bronze { background: linear-gradient(135deg, #cd7f32, #a05a1c); color: #fff; }
+.top10-poster { flex-shrink: 0; }
+.top10-poster img { width: 42px; height: 60px; object-fit: cover; border-radius: 7px; display: block; }
+.top10-info { flex: 1; min-width: 0; }
+.top10-title {
+    display: block; color: var(--text); font-weight: 700; font-size: 14px;
+    text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.top10-title:hover { color: var(--primary); }
+.top10-meta { display: flex; flex-wrap: wrap; gap: 10px; font-size: 11px; color: var(--muted); margin-top: 3px; }
+.top10-meta i { margin-right: 3px; font-size: 9px; }
+
+@media (max-width: 900px) {
+    .top10-grid { grid-template-columns: 1fr; }
+    .tvguide-strip { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 560px) {
+    .tvguide-strip { grid-template-columns: repeat(2, 1fr); }
+    .tvguide-row { flex-wrap: wrap; }
+    .az-items { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   Comment voting + star rating
+   ============================================================ */
+.comment-vote-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: transparent; border: 1px solid var(--border);
+    color: var(--muted); border-radius: 20px;
+    padding: 4px 12px; font-size: 12px; cursor: pointer;
+    transition: all 0.2s ease;
+}
+.comment-vote-btn:hover { border-color: var(--primary); color: var(--text); }
+.comment-vote-btn.voted { background: var(--primary); border-color: var(--primary); color: #fff; }
+.user-rating { display: flex; align-items: center; gap: 4px; }
+.rate-star {
+    background: transparent; border: none; cursor: pointer;
+    color: #f1c40f; font-size: 18px; padding: 2px 3px;
+    transition: transform 0.15s ease;
+}
+.rate-star:hover { transform: scale(1.25); }
+.rate-star.picked i { color: #f1c40f; }
+.rating-avg { margin-left: 8px; font-size: 13px; font-weight: 700; color: var(--muted); }

@@ -229,10 +229,27 @@ $epTitle = $currentEp && isset($currentEp['title']) ? $currentEp['title'] : '';
             <?php endif; ?>
         </div>
 
+        <!-- Download this episode (if the episode or series provides a link) -->
+        <?php
+            $__epDownload = '';
+            if ($currentEp && !empty($currentEp['download_url'])) {
+                $__epDownload = $currentEp['download_url'];
+            } elseif (!empty($anime['download_url'])) {
+                $__epDownload = $anime['download_url'];
+            }
+        ?>
+        <?php if ($__epDownload !== ''): ?>
+        <div style="display:flex; justify-content:center; margin-top:14px;">
+            <a href="<?php echo htmlspecialchars($__epDownload, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener" class="btn btn-accent btn-sm">
+                <i class="fas fa-download"></i> Download Episode <?php e($epNum); ?>
+            </a>
+        </div>
+        <?php endif; ?>
+
         <!-- Report broken video -->
         <div style="display:flex; justify-content:flex-end; margin-top:14px;">
             <button class="btn btn-outline btn-sm" id="report-broken-btn">
-                <i class="fas fa-flag"></i> <?php echo t('Report Broken Video'); ?>
+                <i class="fas fa-flag"></i> Report Broken Video
             </button>
         </div>
         <div id="report-form" style="display:none; margin-top:14px; padding:16px; background:var(--card); border-radius:8px; max-width:500px;">

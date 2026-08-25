@@ -123,6 +123,8 @@ outputJsonLd($movie, 'movie');
                         <span><i class="fas fa-eye"></i> <?php echo number_format($mvViews); ?> views</span>
                     <?php endif; ?>
                 </div>
+                <!-- Rate this movie (5-star widget, stored per visitor) -->
+                <div class="user-rating" data-key="movie-<?php e($mvId); ?>" data-value="<?php echo !empty($mvRating) ? round(((float)$mvRating / 10) * 5, 1) : '0'; ?>" style="margin-top:12px;"></div>
 
                 <?php if (!empty($mvGenre)): ?>
                 <div class="movie-genres">
@@ -212,7 +214,7 @@ outputJsonLd($movie, 'movie');
         <!-- Report broken video -->
         <div style="display:flex; justify-content:flex-end; margin-top:14px;">
             <button class="btn btn-outline btn-sm" id="report-broken-btn">
-                <i class="fas fa-flag"></i> <?php echo t('Report Broken Video'); ?>
+                <i class="fas fa-flag"></i> Report Broken Video
             </button>
         </div>
         <div id="report-form" style="display:none; margin-top:14px; padding:16px; background:var(--card); border-radius:8px; max-width:500px;">
@@ -272,6 +274,11 @@ outputJsonLd($movie, 'movie');
                     <p style="color:var(--muted); text-align:center; padding:24px;">No comments yet. Be the first to share your thoughts!</p>
                 <?php else: ?>
                     <?php foreach ($comments as $c): ?>
+                        <?php
+                            $__cid = isset($c['id']) ? $c['id'] : '';
+                            $__votes = getData(FILE_COMMENT_VOTES);
+                            $__cv = (isset($__votes[$__cid]) && is_array($__votes[$__cid])) ? $__votes[$__cid] : array('up' => 0, 'down' => 0);
+                        ?>
                         <div style="padding:14px 0; border-bottom:1px solid var(--border);">
                             <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
                                 <div style="width:36px; height:36px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px;">
@@ -283,6 +290,16 @@ outputJsonLd($movie, 'movie');
                                 </div>
                             </div>
                             <p style="margin-left:46px; color:var(--text); font-size:14px; line-height:1.6;"><?php e(isset($c['text']) ? $c['text'] : ''); ?></p>
+                            <?php if ($__cid !== ''): ?>
+                            <div class="comment-votes" data-comment-id="<?php e($__cid); ?>" style="margin-left:46px; margin-top:8px; display:flex; align-items:center; gap:12px;">
+                                <button type="button" class="comment-vote-btn" data-vote="up" aria-label="Helpful">
+                                    <i class="far fa-thumbs-up"></i> <span class="vote-count"><?php echo (int)$__cv['up']; ?></span>
+                                </button>
+                                <button type="button" class="comment-vote-btn" data-vote="down" aria-label="Not helpful">
+                                    <i class="far fa-thumbs-down"></i> <span class="vote-count"><?php echo (int)$__cv['down']; ?></span>
+                                </button>
+                            </div>
+                            <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -296,7 +313,7 @@ outputJsonLd($movie, 'movie');
 <section class="section">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title"><?php echo t('Related Movies'); ?></h2>
+            <h2 class="section-title">Related Movies</h2>
         </div>
         <div class="card-grid">
             <?php foreach ($related as $m): ?>

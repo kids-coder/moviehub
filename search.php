@@ -154,7 +154,7 @@ include __DIR__ . '/header.php';
                 <?php if (empty($moviePag['items'])): ?>
                     <div class="empty-state">
                         <i class="fas fa-film"></i>
-                        <h3><?php echo t('No Movies Found'); ?></h3>
+                        <h3>No Movies Found</h3>
                         <p>Try a different search term or remove some filters. You can also explore <a href="<?php e(BASE_URL); ?>/trending.php">Trending Now</a>.</p>
                         <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:12px;">
                             <?php foreach (array_slice(getAllGenres(), 0, 6) as $g): ?>
@@ -200,7 +200,7 @@ include __DIR__ . '/header.php';
                 <?php if (empty($animePag['items'])): ?>
                     <div class="empty-state">
                         <i class="fas fa-tv"></i>
-                        <h3><?php echo t('No Anime Found'); ?></h3>
+                        <h3>No Anime Found</h3>
                         <p>Try a different search term or explore <a href="<?php e(BASE_URL); ?>/anime.php">all anime</a>.</p>
                     </div>
                 <?php else: ?>

@@ -172,7 +172,7 @@ foreach ($animeList as $a) {
 <section class="section" id="continue-watching-section" style="display:none; padding: 24px 0;">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title"><i class="fas fa-history" style="color:var(--primary); margin-right:6px;"></i> <?php echo t('Continue Watching'); ?></h2>
+            <h2 class="section-title"><i class="fas fa-history" style="color:var(--primary); margin-right:6px;"></i> Continue Watching</h2>
             <button class="section-link" id="clear-history-btn" style="background:none; border:none; color:var(--muted); cursor:pointer; font-size:13px;"><i class="fas fa-trash"></i> <?php e('Clear'); ?></button>
         </div>
         <div class="scroll-row" id="recently-watched">
@@ -185,8 +185,8 @@ foreach ($animeList as $a) {
 <section class="section" id="watchlist-section" style="display:none; padding: 24px 0;">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title"><i class="fas fa-heart" style="color:#e74c3c; margin-right:6px;"></i> <?php echo t('My Favorites'); ?></h2>
-            <a href="<?php e(BASE_URL); ?>/favorites.php" class="section-link"><?php echo t('View All'); ?> <i class="fas fa-arrow-right"></i></a>
+            <h2 class="section-title"><i class="fas fa-heart" style="color:#e74c3c; margin-right:6px;"></i> My Favorites</h2>
+            <a href="<?php e(BASE_URL); ?>/favorites.php" class="section-link">View All <i class="fas fa-arrow-right"></i></a>
         </div>
         <div class="scroll-row" id="watchlist-row">
             <!-- Populated by features.js renderWatchlist() -->
@@ -199,7 +199,7 @@ foreach ($animeList as $a) {
 <section class="section">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title"><?php echo t('Featured Movies'); ?></h2>
+            <h2 class="section-title">Featured Movies</h2>
             <a href="<?php e(BASE_URL); ?>/search.php" class="section-link">View All <i class="fas fa-arrow-right"></i></a>
         </div>
         <div class="scroll-row">
@@ -236,7 +236,7 @@ foreach ($animeList as $a) {
 <section class="section">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title"><i class="fas fa-fire" style="color:var(--accent); margin-right:6px;"></i> <?php echo t('Trending Now'); ?></h2>
+            <h2 class="section-title"><i class="fas fa-fire" style="color:var(--accent); margin-right:6px;"></i> Trending Now</h2>
             <a href="<?php e(BASE_URL); ?>/trending.php" class="section-link">View All <i class="fas fa-arrow-right"></i></a>
         </div>
         <div class="scroll-row">
@@ -274,7 +274,7 @@ foreach ($animeList as $a) {
 <section class="section">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title"><?php echo t('Recent Movies'); ?></h2>
+            <h2 class="section-title">Recent Movies</h2>
             <a href="<?php e(BASE_URL); ?>/search.php" class="section-link">View All <i class="fas fa-arrow-right"></i></a>
         </div>
         <?php if (empty($recentMovies)): ?>
@@ -318,7 +318,7 @@ foreach ($animeList as $a) {
 <section class="section">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title"><i class="fas fa-star" style="color:#FFD700; margin-right:6px;"></i> <?php echo t('Top Rated'); ?></h2>
+            <h2 class="section-title"><i class="fas fa-star" style="color:#FFD700; margin-right:6px;"></i> Top Rated</h2>
             <a href="<?php e(BASE_URL); ?>/top-rated.php" class="section-link">View All <i class="fas fa-arrow-right"></i></a>
         </div>
         <div class="scroll-row">
@@ -355,7 +355,7 @@ foreach ($animeList as $a) {
 <section class="section">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title"><i class="fas fa-map-marker-alt" style="color:#2ecc71; margin-right:6px;"></i> <?php echo t('Popular in Bangladesh'); ?></h2>
+            <h2 class="section-title"><i class="fas fa-map-marker-alt" style="color:#2ecc71; margin-right:6px;"></i> Popular in Bangladesh</h2>
         </div>
         <div class="scroll-row">
             <?php foreach ($popularBD as $m): ?>
@@ -379,7 +379,7 @@ foreach ($animeList as $a) {
 <section class="section">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title anime-accent"><?php echo t('Latest Anime'); ?></h2>
+            <h2 class="section-title anime-accent">Latest Anime</h2>
             <a href="<?php e(BASE_URL); ?>/anime.php" class="section-link">View All <i class="fas fa-arrow-right"></i></a>
         </div>
         <?php if (empty($latestAnime)): ?>
@@ -425,7 +425,7 @@ foreach ($animeList as $a) {
     <div class="container">
         <div class="section-header">
             <h2 class="section-title"><i class="fas fa-plus-circle" style="color:var(--primary); margin-right:6px;"></i> Recently Added</h2>
-            <a href="<?php e(BASE_URL); ?>/search.php?sort=newest" class="section-link"><?php echo t('View All'); ?> <i class="fas fa-arrow-right"></i></a>
+            <a href="<?php e(BASE_URL); ?>/search.php?sort=newest" class="section-link">View All <i class="fas fa-arrow-right"></i></a>
         </div>
         <div class="scroll-row">
             <?php foreach ($recentlyAdded as $m): ?>

@@ -10,28 +10,6 @@
     var THEME_KEY = 'moviehub-theme';
     var FAV_KEY = 'moviehub-favs';
     var HISTORY_KEY = 'moviehub-history';
-    var LOWDATA_KEY = 'bdmh_lowdata';
-
-    /* ---------- Low-Data Mode ---------- */
-    function applyLowData(on) {
-        document.body.classList.toggle('low-data', !!on);
-        var btn = document.getElementById('lowdata-toggle');
-        if (btn) {
-            btn.classList.toggle('active', !!on);
-            var icon = btn.querySelector('i');
-            if (icon) { icon.className = on ? 'fas fa-feather-pointed' : 'fas fa-feather'; }
-        }
-    }
-    window.isLowDataMode = function () {
-        try { return localStorage.getItem(LOWDATA_KEY) === '1'; } catch (e) { return false; }
-    };
-    window.setLowDataMode = function (on) {
-        try { localStorage.setItem(LOWDATA_KEY, on ? '1' : '0'); } catch (e) {}
-        // Mirror to cookie so PHP can skip heavy images server-side
-        document.cookie = LOWDATA_KEY + '=' + (on ? '1' : '0') + ';path=/;max-age=31536000;samesite=lax';
-        applyLowData(on);
-        if (window.showToast) { showToast(on ? 'Low-data mode ON — images reduced' : 'Low-data mode OFF', on ? 'success' : ''); }
-    };
 
     /* ---------- Theme Toggle ---------- */
     function getTheme() {
@@ -60,16 +38,6 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         setTheme(getTheme());
-        // Low-data mode: honor server-side cookie state, wire the toggle button
-        var lowOn = false;
-        try { lowOn = document.cookie.indexOf('bdmh_lowdata=1') !== -1 || localStorage.getItem(LOWDATA_KEY) === '1'; } catch (e) {}
-        applyLowData(lowOn);
-        var lowBtn = document.getElementById('lowdata-toggle');
-        if (lowBtn) {
-            lowBtn.addEventListener('click', function () {
-                window.setLowDataMode(!window.isLowDataMode());
-            });
-        }
         // The actual theme toggle is the <button class="theme-toggle">.
         // The Favorites link now uses a separate class (.nav-action-btn),
         // so it no longer collides with the theme toggle.
@@ -531,6 +499,122 @@
                 }
             });
         }
+    });
+
+
+
+    /* ---------- Comment voting ---------- */
+    // Delegated handler: works on any page that renders .comment-votes blocks.
+    document.addEventListener('click', function (ev) {
+        var btn = ev.target.closest ? ev.target.closest('.comment-vote-btn') : null;
+        if (!btn) { return; }
+        var wrap = btn.closest('.comment-votes');
+        if (!wrap || wrap.getAttribute('data-busy') === '1') { return; }
+
+        var cid = wrap.getAttribute('data-comment-id');
+        var vote = btn.getAttribute('data-vote');
+        if (!cid || !vote) { return; }
+
+        // Build the POST body (includes the per-page CSRF token).
+        var form = document.querySelector('input[name="csrf_token"]');
+        var token = form ? form.value : '';
+        var body = new URLSearchParams();
+        body.append('comment_id', cid);
+        body.append('vote', vote);
+        body.append('csrf_token', token);
+
+        wrap.setAttribute('data-busy', '1');
+        fetch((window.BDMH_BASE_URL || '') + '/api-comment-vote.php', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            body: body.toString()
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            wrap.removeAttribute('data-busy');
+            if (data && typeof data.up !== 'undefined') {
+                var ups = wrap.querySelector('.comment-vote-btn[data-vote="up"] .vote-count');
+                var downs = wrap.querySelector('.comment-vote-btn[data-vote="down"] .vote-count');
+                if (ups) { ups.textContent = data.up; }
+                if (downs) { downs.textContent = data.down; }
+                btn.classList.add('voted');
+                if (window.showToast) {
+                    showToast(data.ok ? 'Thanks for your feedback!' : (data.error || 'Vote not counted'), data.ok ? 'success' : '');
+                }
+            } else if (window.showToast) {
+                showToast((data && data.error) ? data.error : 'Vote failed', 'error');
+            }
+        })
+        .catch(function () {
+            wrap.removeAttribute('data-busy');
+            if (window.showToast) { showToast('Vote failed — check your connection', 'error'); }
+        });
+    });
+
+    /* ---------- Star rating widget ---------- */
+    // Renders interactive stars inside .user-rating elements.
+    // The average is displayed server-side; user's own pick is stored locally
+    // and merged into the average shown to them.
+    function renderStars(container) {
+        var value = parseFloat(container.getAttribute('data-value') || '0');
+        var userPick = 0;
+        try { userPick = parseInt(localStorage.getItem('moviehub-rating-' + container.getAttribute('data-key')) || '0', 10) || 0; } catch (e) {}
+        var html = '';
+        for (var i = 1; i <= 5; i++) {
+            var cls = i <= Math.round(value) ? 'fas fa-star' : 'far fa-star';
+            html += '<button type="button" class="rate-star' + (i <= userPick ? ' picked' : '') + '" data-star="' + i + '" aria-label="Rate ' + i + ' out of 5"><i class="' + cls + '"></i></button>';
+        }
+        html += '<span class="rating-avg">' + (value > 0 ? value.toFixed(1) : 'N/A') + '</span>';
+        container.innerHTML = html;
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        var widgets = document.querySelectorAll('.user-rating');
+        for (var w = 0; w < widgets.length; w++) { renderStars(widgets[w]); }
+
+        document.addEventListener('click', function (ev) {
+            var star = ev.target.closest ? ev.target.closest('.rate-star') : null;
+            if (!star) { return; }
+            var wrap = star.closest('.user-rating');
+            if (!wrap) { return; }
+            var key = wrap.getAttribute('data-key');
+            var val = parseInt(star.getAttribute('data-star'), 10) || 0;
+            try { localStorage.setItem('moviehub-rating-' + key, String(val)); } catch (e) {}
+            renderStars(wrap);
+            if (window.showToast) { showToast('You rated this ' + val + '/5. Thanks!', 'success'); }
+        });
+    });
+
+    /* ---------- New-content notifications ---------- */
+    // Polls api-notifications.php once per visit; shows a toast for items
+    // newer than the last seen timestamp (stored in localStorage).
+    document.addEventListener('DOMContentLoaded', function () {
+        var NOTIF_KEY = 'moviehub-last-seen';
+        var lastSeen = 0;
+        try { lastSeen = parseInt(localStorage.getItem(NOTIF_KEY) || '0', 10) || 0; } catch (e) {}
+
+        fetch((window.BDMH_BASE_URL || '') + '/api-notifications.php', { credentials: 'same-origin' })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (data) {
+                if (!data || !data.items || !data.items.length) { return; }
+                var newest = data.items[0].ts || 0;
+                var fresh = [];
+                for (var i = 0; i < data.items.length && fresh.length < 3; i++) {
+                    if ((data.items[i].ts || 0) > lastSeen) { fresh.push(data.items[i]); }
+                }
+                // Always advance the watermark so each batch is announced once.
+                try { localStorage.setItem(NOTIF_KEY, String(newest)); } catch (e) {}
+                if (!fresh.length || !window.showToast) { return; }
+                setTimeout(function () {
+                    showToast(fresh[0].label + ': ' + fresh[0].title + ' is now available!', 'success');
+                    if (fresh.length > 1) {
+                        setTimeout(function () {
+                            showToast(fresh.length - 1 + ' more new title' + (fresh.length > 2 ? 's' : '') + ' added — check the homepage', '');
+                        }, 3200);
+                    }
+                }, 1500);
+            })
+            .catch(function () { /* silent: notifications are best-effort */ });
     });
 
     /* ---------- Hero slider auto-rotate ---------- */

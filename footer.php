@@ -63,16 +63,20 @@ $footerText   = isset($settings['footer_text']) ? $settings['footer_text'] : '';
             <div class="footer-col">
                 <h4>Browse</h4>
                 <ul>
-                    <li><a href="<?php e(BASE_URL); ?>/index.php"><?php echo t('Home'); ?></a></li>
-                    <li><a href="<?php e(BASE_URL); ?>/search.php"><?php echo t('Movies'); ?></a></li>
-                    <li><a href="<?php e(BASE_URL); ?>/series.php"><?php echo t('Series'); ?></a></li>
-                    <li><a href="<?php e(BASE_URL); ?>/anime.php"><?php echo t('Anime'); ?></a></li>
-                    <li><a href="<?php e(BASE_URL); ?>/trending.php"><?php echo t('Trending'); ?></a></li>
-                    <li><a href="<?php e(BASE_URL); ?>/top-rated.php"><?php echo t('Top Rated'); ?></a></li>
-                    <li><a href="<?php e(BASE_URL); ?>/genres.php"><?php echo t('Genres'); ?></a></li>
-                    <li><a href="<?php e(BASE_URL); ?>/anime-schedule.php"><?php echo t('Schedule'); ?></a></li>
-                    <li><a href="<?php e(BASE_URL); ?>/favorites.php"><?php echo t('My Favorites'); ?></a></li>
-                    <li><a href="<?php e(BASE_URL); ?>/request.php"><?php echo t('Request a Title'); ?></a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/index.php">Home</a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/search.php">Movies</a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/series.php">Series</a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/anime.php">Anime</a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/trending.php">Trending</a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/top10.php">Top 10 Charts</a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/top-rated.php">Top Rated</a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/az.php">Browse A-Z</a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/download.php">Download Center</a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/genres.php">Genres</a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/tv-guide.php">TV Guide</a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/anime-schedule.php">Schedule</a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/favorites.php">My Favorites</a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/request.php">Request a Title</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -83,12 +87,12 @@ $footerText   = isset($settings['footer_text']) ? $settings['footer_text'] : '';
                             <li><a href="<?php e(BASE_URL); ?>/page.php?slug=<?php echo urlencode(isset($p['slug']) ? $p['slug'] : ''); ?>"><?php e(isset($p['title']) ? $p['title'] : 'Page'); ?></a></li>
                         <?php endforeach; ?>
                     <?php endif; ?>
-                    <li><a href="<?php e(BASE_URL); ?>/about.php"><?php echo t('About Us'); ?></a></li>
-                    <li><a href="<?php e(BASE_URL); ?>/contact.php"><?php echo t('Contact'); ?></a></li>
-                    <li><a href="<?php e(BASE_URL); ?>/dmca.php"><?php echo t('DMCA / Copyright'); ?></a></li>
-                    <li><a href="<?php e(BASE_URL); ?>/privacy.php"><?php echo t('Privacy Policy'); ?></a></li>
-                    <li><a href="<?php e(BASE_URL); ?>/terms.php"><?php echo t('Terms of Service'); ?></a></li>
-                    <li><a href="<?php e(BASE_URL); ?>/disclaimer.php"><?php echo t('Disclaimer'); ?></a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/about.php">About Us</a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/contact.php">Contact</a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/dmca.php">DMCA / Copyright</a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/privacy.php">Privacy Policy</a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/terms.php">Terms of Service</a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/disclaimer.php">Disclaimer</a></li>
                     <li><a href="<?php e(BASE_URL); ?>/admin/login.php">Admin Login</a></li>
                 </ul>
             </div>

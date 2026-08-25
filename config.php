@@ -133,6 +133,7 @@ define('FILE_USERS',     DATA_DIR . '/users.json');
 define('FILE_CATEGORIES', DATA_DIR . '/categories.json');
 define('FILE_FEATURED',  DATA_DIR . '/featured.json');
 define('FILE_COMMENTS',  DATA_DIR . '/comments.json');
+define('FILE_COMMENT_VOTES', DATA_DIR . '/comment_votes.json');
 define('FILE_SLIDES',    DATA_DIR . '/slides.json');
 define('FILE_GENRES',    DATA_DIR . '/genres.json');
 

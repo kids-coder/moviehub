@@ -24,6 +24,11 @@ AddDefaultCharset UTF-8
     RewriteRule ^movie/([A-Za-z0-9_-]+)/?$ movie.php?slug=$1 [L,QSA]
     RewriteRule ^series/([A-Za-z0-9_-]+)/?$ series.php?slug=$1 [L,QSA]
     RewriteRule ^anime/([A-Za-z0-9_-]+)/?$ anime-watch.php?slug=$1 [L,QSA]
+    # Short aliases for browse pages
+    RewriteRule ^a-z/?$ az.php [L,QSA]
+    RewriteRule ^tv-guide/?$ tv-guide.php [L,QSA]
+    RewriteRule ^downloads/?$ download.php [L,QSA]
+    RewriteRule ^top-10/?$ top10.php [L,QSA]
     # Crawler-friendly aliases: /sitemap.xml and /rss.xml
     RewriteRule ^sitemap\.xml$ sitemap.php [L]
     RewriteRule ^rss\.xml$ rss.php [L]

@@ -1,1 +1,9 @@
-[]
+[
+    {
+        "id": "sch1",
+        "anime_id": "a1",
+        "day": "Saturday",
+        "time": "18:00",
+        "timezone": "Asia/Dhaka"
+    }
+]
