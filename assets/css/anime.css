@@ -1,0 +1,99 @@
+/* ============================================================
+   BDMovieHub - Anime Stylesheet (Purple Theme Override)
+   Loaded on anime-related pages: anime.php, anime-watch.php,
+   anime-search.php, anime-schedule.php
+   ============================================================ */
+
+body.anime-page {
+    --primary: #9b59b6;
+    --accent: #8e44ad;
+}
+
+/* Anime section heading uses purple bar */
+body.anime-page .section-title::before {
+    background: var(--anime-color);
+}
+
+/* Anime cards have purple hover border */
+body.anime-page .movie-card:hover {
+    border-color: var(--anime-color);
+}
+body.anime-page .movie-card:hover .card-play-btn {
+    background: var(--anime-color);
+}
+
+/* Anime badge styling */
+body.anime-page .card-badge {
+    background: var(--anime-color);
+}
+
+/* Purple primary buttons on anime pages */
+body.anime-page .btn-primary {
+    background: var(--anime-color);
+}
+body.anime-page .btn-primary:hover {
+    background: #8e44ad;
+}
+
+/* Hero CTA */
+body.anime-page .hero-cta {
+    background: var(--anime-color);
+}
+body.anime-page .hero-cta:hover {
+    background: #8e44ad;
+}
+
+/* Pagination current page */
+body.anime-page .pagination a:hover,
+body.anime-page .pagination .current {
+    background: var(--anime-color);
+    border-color: var(--anime-color);
+}
+
+/* Genre pills active state */
+body.anime-page .genre-pill.active,
+body.anime-page .genre-pill:hover {
+    background: var(--anime-color);
+    border-color: var(--anime-color);
+    color: #fff;
+}
+
+/* Anime detail page banner gradient overlay */
+body.anime-page .movie-banner::before {
+    background: linear-gradient(to top, var(--bg) 0%, rgba(70, 30, 90, 0.5) 60%, rgba(70, 30, 90, 0.2) 100%);
+}
+
+/* Subtle purple glow on anime poster */
+body.anime-page .movie-poster {
+    box-shadow: 0 4px 24px rgba(155, 89, 182, 0.25);
+}
+
+/* Episode active item already styled in style.css using --anime-color */
+
+/* Anime page subtitle/description text accent */
+body.anime-page .section-subtitle {
+    color: var(--anime-color);
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 4px;
+}
+
+/* Schedule day headers use purple (already in style.css via --anime-color) */
+body.anime-page .schedule-day {
+    border-top-color: var(--anime-color);
+}
+
+/* Scroll row scrollbar color */
+body.anime-page .scroll-row::-webkit-scrollbar-thumb {
+    background: var(--anime-color);
+}
+
+/* Episode item hover/active already covered */
+
+/* Search tab active state on anime-search */
+body.anime-page .search-tab.active {
+    color: var(--anime-color);
+    border-bottom-color: var(--anime-color);
+}

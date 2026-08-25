@@ -1,0 +1,22 @@
+[
+    {
+        "id": "cat1",
+        "name": "Hollywood",
+        "slug": "hollywood"
+    },
+    {
+        "id": "cat2",
+        "name": "Bollywood",
+        "slug": "bollywood"
+    },
+    {
+        "id": "cat3",
+        "name": "Anime",
+        "slug": "anime"
+    },
+    {
+        "id": "cat4",
+        "name": "Game",
+        "slug": "game"
+    }
+]

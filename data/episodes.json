@@ -1,0 +1,74 @@
+[
+    {
+        "id": "ep1",
+        "anime_id": "a1",
+        "episode_number": 105,
+        "title": "Bachelor Point - S5 E105",
+        "stream_url": "https://player.abyssplayer.com/Lv3ytDDrp",
+        "thumbnail": "https://cdn.bongo-solutions.com/919f93a7-400e-4149-a70d-204beb589074/content/fa396228-616e-4797-b9fb-f525bf27c911/b3f218ac-2567-4762-85b8-6937bd238d6a.jpg",
+        "created_at": "2026-08-24"
+    },
+    {
+        "id": "ep2",
+        "anime_id": "a1",
+        "episode_number": 106,
+        "title": "Bachelor Point - S5 E106",
+        "stream_url": "https://player.abyssplayer.com/F6nkzyRJg",
+        "thumbnail": "",
+        "created_at": "2026-08-24"
+    },
+    {
+        "id": "ep3",
+        "anime_id": "a1",
+        "episode_number": 107,
+        "title": "Bachelor Point - S5 E107",
+        "stream_url": "https://abyssplayer.com/IIkm9vJXv",
+        "thumbnail": "",
+        "created_at": "2026-08-24"
+    },
+    {
+        "id": "ep4",
+        "anime_id": "a1",
+        "episode_number": 108,
+        "title": "Bachelor Point - S5 E108",
+        "stream_url": "https://abyssplayer.com/pdLcHMCch",
+        "thumbnail": "",
+        "created_at": "2026-08-24"
+    },
+    {
+        "id": "ep5",
+        "anime_id": "a1",
+        "episode_number": 109,
+        "title": "Bachelor Point - S5 E109",
+        "stream_url": "https://abyssplayer.com/Csn8-R7Eb",
+        "thumbnail": "",
+        "created_at": "2026-08-24"
+    },
+    {
+        "id": "ep6",
+        "anime_id": "a1",
+        "episode_number": 110,
+        "title": "Bachelor Point - S5 E110",
+        "stream_url": "https://abyssplayer.com/OHz2zIosj",
+        "thumbnail": "",
+        "created_at": "2026-08-24"
+    },
+    {
+        "id": "ep7",
+        "anime_id": "a1",
+        "episode_number": 111,
+        "title": "Bachelor Point - S5 E111",
+        "stream_url": "https://abyssplayer.com/mMQBcVPto",
+        "thumbnail": "",
+        "created_at": "2026-08-24"
+    },
+    {
+        "id": "ep8",
+        "anime_id": "a1",
+        "episode_number": 112,
+        "title": "Bachelor Point - S5 E112",
+        "stream_url": "https://abyssplayer.com/EOWGbfq9W",
+        "thumbnail": "",
+        "created_at": "2026-08-24"
+    }
+]
