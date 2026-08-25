@@ -1,0 +1,18 @@
+# BDMovieHub - robots.txt
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /data/
+Disallow: /api-search.php
+Disallow: /api-report.php
+Disallow: /setup.php
+Disallow: /debug.php
+Disallow: /test.php
+Disallow: /diagnostics.php
+
+# Allow sitemap and RSS
+Allow: /sitemap.php
+Allow: /rss.php
+
+# Sitemap location
+Sitemap: /sitemap.php
