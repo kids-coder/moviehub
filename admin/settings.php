@@ -41,6 +41,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Comments
     $auto_approve_comments = isset($_POST['auto_approve_comments']) ? true : false;
 
+    // Feature toggles (checkboxes: present in POST = enabled)
+    $feature_keys = array('enable_lowdata','enable_notifications','enable_top10','enable_az','enable_tvguide','enable_downloads','enable_comment_votes','enable_ratings');
+    $features = array();
+    foreach ($feature_keys as $fk) { $features[$fk] = isset($_POST[$fk]) ? true : false; }
+
     if ($site_name === '') { $errors[] = 'Site name is required.'; }
 
     if (empty($errors)) {
@@ -67,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'custom_css'             => $custom_css,
             'custom_js'              => $custom_js,
             'auto_approve_comments'  => $auto_approve_comments,
-        );
+        ) + $features;
         if (saveData(FILE_SETTINGS, $newSettings)) {
             setFlash('success', 'Settings saved.');
             adminRedirect('settings.php');
@@ -212,6 +217,28 @@ include __DIR__ . '/header.php';
         <label for="auto_approve" style="margin:0;">Auto-approve comments (skip moderation)</label>
     </div>
     <div class="hint" style="margin-top:6px;">If unchecked, comments will need to be approved from the Messages page.</div>
+</div>
+
+<div class="admin-card">
+    <h2 style="font-size:20px; margin-bottom:20px;"><i class="fas fa-toggle-on" style="color:#2ecc71;"></i> Feature Toggles</h2>
+    <div class="hint" style="margin-bottom:14px;">Turn public website features on or off. All features are ON by default.</div>
+<?php
+$__featDefs = array(
+    'enable_lowdata'       => array('Low-data mode', 'Feather icon in the header — visitors get a lighter, faster site.'),
+    'enable_notifications' => array('New-content notifications', 'Toast popups when new movies or episodes are added.'),
+    'enable_top10'         => array('Top 10 page', 'Top-rated movies & series ranking (/top-10).'),
+    'enable_az'            => array('A-Z directory', 'Browse everything alphabetically (/a-z).'),
+    'enable_tvguide'       => array('TV guide / schedule', 'Weekly airing schedule page (/tv-guide).'),
+    'enable_downloads'     => array('Downloads page', 'List of downloadable content (/downloads).'),
+    'enable_comment_votes' => array('Comment voting', 'Up/down votes on comments.'),
+    'enable_ratings'       => array('User star ratings', 'Visitors rate movies & series with stars.'),
+);
+foreach ($__featDefs as $__key => $__def): ?>
+    <div class="checkbox-row">
+        <input type="checkbox" name="<?php echo $__key; ?>" id="<?php echo $__key; ?>" value="1" <?php echo !isset($settings[$__key]) || !empty($settings[$__key]) ? 'checked' : ''; ?>>
+        <label for="<?php echo $__key; ?>" style="margin:0;"><strong><?php echo $__def[0]; ?></strong> <span style="color:#8b8b9e;font-size:12px;">— <?php echo $__def[1]; ?></span></label>
+    </div>
+<?php endforeach; ?>
 </div>
 
 <div class="admin-card">

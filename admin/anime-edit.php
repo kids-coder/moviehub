@@ -33,6 +33,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $genreArr      = isset($_POST['genres']) ? $_POST['genres'] : array();
     $altTitle      = isset($_POST['alternate_title']) ? trim($_POST['alternate_title']) : '';
     $language      = isset($_POST['language']) ? trim($_POST['language']) : '';
+    $download_url  = isset($_POST['download_url']) ? trim($_POST['download_url']) : '';
+    // Series-level fallback stream (used when an episode has no own stream)
+    $alt_sources   = array();
+    foreach (preg_split('/\r?\n/', isset($_POST['alt_sources']) ? $_POST['alt_sources'] : '') as $__l) {
+        $__l = trim($__l);
+        if ($__l !== '') { $alt_sources[] = $__l; }
+    }
 
     if ($title === '') { $errors[] = 'Title is required.'; }
     if ($slug === '') { $slug = slugify($title); }
@@ -56,6 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $a['studio']        = $studio;
                 $a['featured']      = $featured;
                 $a['language']      = $language;
+                $a['download_url']  = $download_url;
+                $a['alt_sources']   = $alt_sources;
                 break;
             }
         }
@@ -210,6 +219,17 @@ include __DIR__ . '/header.php';
                 <input type="checkbox" name="featured" id="featured" value="1" <?php echo !empty($anime['featured']) ? 'checked' : ''; ?>>
                 <label for="featured" style="margin:0;">Mark as Featured</label>
             </div>
+        </div>
+
+        <div class="form-group">
+            <label>Series Download URL (optional fallback)</label>
+            <input type="text" name="download_url" value="<?php e(isset($anime['download_url']) ? $anime['download_url'] : ''); ?>">
+            <small style="color:#8b8b9e;">Used on the watch page when an episode has no download link of its own.</small>
+        </div>
+
+        <div class="form-group">
+            <label>Series Backup Stream URLs (one per line, optional)</label>
+            <textarea name="alt_sources" rows="3"><?php echo htmlspecialchars(implode("\n", isset($anime['alt_sources']) && is_array($anime['alt_sources']) ? $anime['alt_sources'] : array()), ENT_QUOTES); ?></textarea>
         </div>
 
         <div style="display:flex; gap:10px;">

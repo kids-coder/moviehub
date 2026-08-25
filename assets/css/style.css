@@ -1289,3 +1289,9 @@ body.low-data img[data-src] { background: var(--card); min-height: 60px; }
 .rate-star:hover { transform: scale(1.25); }
 .rate-star.picked i { color: #f1c40f; }
 .rating-avg { margin-left: 8px; font-size: 13px; font-weight: 700; color: var(--muted); }
+
+/* Low-data mode toggle */
+#lowdata-toggle.active { background: var(--primary); color: #fff; }
+body.low-data img { filter: none; }
+body.low-data .card-poster img { opacity: 0.55; }
+body.low-data .hero-banner img { opacity: 0.4; }

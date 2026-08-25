@@ -10,6 +10,28 @@
     var THEME_KEY = 'moviehub-theme';
     var FAV_KEY = 'moviehub-favs';
     var HISTORY_KEY = 'moviehub-history';
+    var LOWDATA_KEY = 'bdmh_lowdata';
+
+    /* ---------- Low-Data Mode ---------- */
+    function applyLowData(on) {
+        document.body.classList.toggle('low-data', !!on);
+        var btn = document.getElementById('lowdata-toggle');
+        if (btn) {
+            btn.classList.toggle('active', !!on);
+            var icon = btn.querySelector('i');
+            if (icon) { icon.className = on ? 'fas fa-feather-pointed' : 'fas fa-feather'; }
+        }
+    }
+    window.isLowDataMode = function () {
+        try { return localStorage.getItem(LOWDATA_KEY) === '1'; } catch (e) { return false; }
+    };
+    window.setLowDataMode = function (on) {
+        try { localStorage.setItem(LOWDATA_KEY, on ? '1' : '0'); } catch (e) {}
+        // Mirror to cookie so PHP can skip heavy images server-side
+        document.cookie = LOWDATA_KEY + '=' + (on ? '1' : '0') + ';path=/;max-age=31536000;samesite=lax';
+        applyLowData(on);
+        if (window.showToast) { showToast(on ? 'Low-data mode ON — images reduced' : 'Low-data mode OFF', on ? 'success' : ''); }
+    };
 
     /* ---------- Theme Toggle ---------- */
     function getTheme() {
@@ -44,6 +66,17 @@
         var toggle = document.querySelector('button.theme-toggle');
         if (toggle) {
             toggle.addEventListener('click', toggleTheme);
+        }
+
+        // Low-data mode: honor server-side cookie state, wire the toggle button.
+        var lowOn = false;
+        try { lowOn = document.cookie.indexOf('bdmh_lowdata=1') !== -1 || localStorage.getItem(LOWDATA_KEY) === '1'; } catch (e) {}
+        applyLowData(lowOn);
+        var lowBtn = document.getElementById('lowdata-toggle');
+        if (lowBtn) {
+            lowBtn.addEventListener('click', function () {
+                window.setLowDataMode(!window.isLowDataMode());
+            });
         }
     });
 
@@ -506,6 +539,7 @@
     /* ---------- Comment voting ---------- */
     // Delegated handler: works on any page that renders .comment-votes blocks.
     document.addEventListener('click', function (ev) {
+        if (window.BDMH_FEATURES && window.BDMH_FEATURES.comment_votes === false) { return; }
         var btn = ev.target.closest ? ev.target.closest('.comment-vote-btn') : null;
         if (!btn) { return; }
         var wrap = btn.closest('.comment-votes');
@@ -588,7 +622,9 @@
     /* ---------- New-content notifications ---------- */
     // Polls api-notifications.php once per visit; shows a toast for items
     // newer than the last seen timestamp (stored in localStorage).
+    // Controlled by Admin → Settings → Feature Toggles (BDMH_FEATURES).
     document.addEventListener('DOMContentLoaded', function () {
+        if (window.BDMH_FEATURES && window.BDMH_FEATURES.notifications === false) { return; }
         var NOTIF_KEY = 'moviehub-last-seen';
         var lastSeen = 0;
         try { lastSeen = parseInt(localStorage.getItem(NOTIF_KEY) || '0', 10) || 0; } catch (e) {}

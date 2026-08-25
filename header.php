@@ -118,9 +118,9 @@ $seoKeywords = !empty($settings['seo_keywords']) ? $settings['seo_keywords'] : '
             <li><a href="<?php e(BASE_URL); ?>/series.php" class="<?php echo $pageSection === 'series' ? 'active' : ''; ?>">Series</a></li>
             <li><a href="<?php e(BASE_URL); ?>/anime.php" class="<?php echo $pageSection === 'anime' ? 'active' : ''; ?>">Anime</a></li>
             <li><a href="<?php e(BASE_URL); ?>/trending.php" class="<?php echo $pageSection === 'trending' ? 'active' : ''; ?>">Trending</a></li>
-            <li><a href="<?php e(BASE_URL); ?>/top10.php" class="<?php echo $pageSection === 'top10' ? 'active' : ''; ?>">Top 10</a></li>
-            <li><a href="<?php e(BASE_URL); ?>/tv-guide.php" class="<?php echo $pageSection === 'schedule' ? 'active' : ''; ?>">TV Guide</a></li>
-            <li><a href="<?php e(BASE_URL); ?>/az.php" class="<?php echo $pageSection === 'browse' ? 'active' : ''; ?>">A-Z</a></li>
+            <?php if (!isset($settings['enable_top10']) || !empty($settings['enable_top10'])): ?><li><a href="<?php e(BASE_URL); ?>/top10.php" class="<?php echo $pageSection === 'top10' ? 'active' : ''; ?>">Top 10</a></li><?php endif; ?>
+            <?php if (!isset($settings['enable_tvguide']) || !empty($settings['enable_tvguide'])): ?><li><a href="<?php e(BASE_URL); ?>/tv-guide.php" class="<?php echo $pageSection === 'schedule' ? 'active' : ''; ?>">TV Guide</a></li><?php endif; ?>
+            <?php if (!isset($settings['enable_az']) || !empty($settings['enable_az'])): ?><li><a href="<?php e(BASE_URL); ?>/az.php" class="<?php echo $pageSection === 'browse' ? 'active' : ''; ?>">A-Z</a></li><?php endif; ?>
             <li><a href="<?php e(BASE_URL); ?>/anime-schedule.php" class="<?php echo $pageSection === 'schedule' ? 'active' : ''; ?>">Schedule</a></li>
             <li><a href="<?php e(BASE_URL); ?>/genres.php" class="<?php echo $pageSection === 'genres' ? 'active' : ''; ?>">Genres</a></li>
             <li><a href="<?php e(BASE_URL); ?>/request.php" class="<?php echo $pageSection === 'request' ? 'active' : ''; ?>">Request</a></li>
@@ -132,6 +132,9 @@ $seoKeywords = !empty($settings['seo_keywords']) ? $settings['seo_keywords'] : '
             </div>
             <a href="<?php e(BASE_URL); ?>/favorites.php" class="nav-action-btn" title="My Favorites" aria-label="Favorites"><i class="fas fa-heart"></i></a>
             <button class="theme-toggle" aria-label="Toggle theme" title="Toggle theme"><i class="fas fa-sun"></i></button>
+            <?php if (!isset($settings['enable_lowdata']) || !empty($settings['enable_lowdata'])): ?>
+            <button class="theme-toggle" id="lowdata-toggle" aria-label="Toggle low-data mode" title="Low-data mode"><i class="fas fa-feather"></i></button>
+            <?php endif; ?>
             <button class="hamburger" aria-label="Menu"><i class="fas fa-bars"></i></button>
         </div>
     </div>
@@ -145,12 +148,12 @@ $seoKeywords = !empty($settings['seo_keywords']) ? $settings['seo_keywords'] : '
     <a href="<?php e(BASE_URL); ?>/series.php">Series</a>
     <a href="<?php e(BASE_URL); ?>/anime.php">Anime</a>
     <a href="<?php e(BASE_URL); ?>/trending.php">Trending</a>
-    <a href="<?php e(BASE_URL); ?>/top10.php">Top 10</a>
+    <?php if (!isset($settings['enable_top10']) || !empty($settings['enable_top10'])): ?><a href="<?php e(BASE_URL); ?>/top10.php">Top 10</a><?php endif; ?>
     <a href="<?php e(BASE_URL); ?>/top-rated.php">Top Rated</a>
-    <a href="<?php e(BASE_URL); ?>/az.php">Browse A-Z</a>
-    <a href="<?php e(BASE_URL); ?>/download.php">Downloads</a>
+    <?php if (!isset($settings['enable_az']) || !empty($settings['enable_az'])): ?><a href="<?php e(BASE_URL); ?>/az.php">Browse A-Z</a><?php endif; ?>
+    <?php if (!isset($settings['enable_downloads']) || !empty($settings['enable_downloads'])): ?><a href="<?php e(BASE_URL); ?>/download.php">Downloads</a><?php endif; ?>
     <a href="<?php e(BASE_URL); ?>/genres.php">Genres</a>
-    <a href="<?php e(BASE_URL); ?>/tv-guide.php">TV Guide</a>
+    <?php if (!isset($settings['enable_tvguide']) || !empty($settings['enable_tvguide'])): ?><a href="<?php e(BASE_URL); ?>/tv-guide.php">TV Guide</a><?php endif; ?>
     <a href="<?php e(BASE_URL); ?>/anime-schedule.php">Schedule</a>
     <a href="<?php e(BASE_URL); ?>/favorites.php">My Favorites</a>
     <a href="<?php e(BASE_URL); ?>/request.php">Request a Title</a>
@@ -174,4 +177,11 @@ $seoKeywords = !empty($settings['seo_keywords']) ? $settings['seo_keywords'] : '
 <script>
 // Pass BASE_URL to JS for live search
 window.BDMH_BASE_URL = '<?php e(BASE_URL); ?>';
+// Feature flags controlled from Admin → Settings → Feature Toggles
+window.BDMH_FEATURES = <?php echo json_encode(array(
+    'lowdata'       => !isset($settings['enable_lowdata']) || !empty($settings['enable_lowdata']),
+    'notifications' => !isset($settings['enable_notifications']) || !empty($settings['enable_notifications']),
+    'comment_votes' => !isset($settings['enable_comment_votes']) || !empty($settings['enable_comment_votes']),
+    'ratings'       => !isset($settings['enable_ratings']) || !empty($settings['enable_ratings']),
+)); ?>;
 </script>

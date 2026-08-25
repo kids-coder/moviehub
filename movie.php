@@ -124,7 +124,9 @@ outputJsonLd($movie, 'movie');
                     <?php endif; ?>
                 </div>
                 <!-- Rate this movie (5-star widget, stored per visitor) -->
+                <?php $__mSettings = getSettings(); if (!isset($__mSettings['enable_ratings']) || !empty($__mSettings['enable_ratings'])): ?>
                 <div class="user-rating" data-key="movie-<?php e($mvId); ?>" data-value="<?php echo !empty($mvRating) ? round(((float)$mvRating / 10) * 5, 1) : '0'; ?>" style="margin-top:12px;"></div>
+                <?php endif; ?>
 
                 <?php if (!empty($mvGenre)): ?>
                 <div class="movie-genres">
@@ -290,7 +292,7 @@ outputJsonLd($movie, 'movie');
                                 </div>
                             </div>
                             <p style="margin-left:46px; color:var(--text); font-size:14px; line-height:1.6;"><?php e(isset($c['text']) ? $c['text'] : ''); ?></p>
-                            <?php if ($__cid !== ''): ?>
+                            <?php $__vSettings = getSettings(); if ($__cid !== '' && (!isset($__vSettings['enable_comment_votes']) || !empty($__vSettings['enable_comment_votes']))): ?>
                             <div class="comment-votes" data-comment-id="<?php e($__cid); ?>" style="margin-left:46px; margin-top:8px; display:flex; align-items:center; gap:12px;">
                                 <button type="button" class="comment-vote-btn" data-vote="up" aria-label="Helpful">
                                     <i class="far fa-thumbs-up"></i> <span class="vote-count"><?php echo (int)$__cv['up']; ?></span>

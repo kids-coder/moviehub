@@ -15,6 +15,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title          = isset($_POST['title']) ? trim($_POST['title']) : '';
     $stream_url     = isset($_POST['stream_url']) ? trim($_POST['stream_url']) : '';
     $thumbnail      = isset($_POST['thumbnail']) ? trim($_POST['thumbnail']) : '';
+    $download_url   = isset($_POST['download_url']) ? trim($_POST['download_url']) : '';
+    // Backup streams: one URL per line. Subtitles: one "lang|label|url" per line.
+    $alt_sources    = array();
+    foreach (preg_split('/\r?\n/', isset($_POST['alt_sources']) ? $_POST['alt_sources'] : '') as $__l) {
+        $__l = trim($__l);
+        if ($__l !== '' && $__l !== $stream_url) { $alt_sources[] = $__l; }
+    }
+    $subtitle_tracks = array();
+    foreach (preg_split('/\r?\n/', isset($_POST['subtitle_tracks']) ? $_POST['subtitle_tracks'] : '') as $__l) {
+        $__l = trim($__l);
+        if ($__l === '') { continue; }
+        $__p = array_map('trim', explode('|', $__l));
+        if (count($__p) === 3 && filter_var($__p[2], FILTER_VALIDATE_URL)) {
+            $subtitle_tracks[] = array('lang' => $__p[0], 'label' => $__p[1], 'src' => $__p[2]);
+        }
+    }
 
     if ($anime_id === '') { $errors[] = 'Please select an anime.'; }
     if ($episode_number < 1) { $errors[] = 'Episode number must be at least 1.'; }
@@ -38,6 +54,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'title'          => $title,
             'stream_url'     => $stream_url,
             'thumbnail'      => $thumbnail,
+            'download_url'   => $download_url,
+            'alt_sources'    => $alt_sources,
+            'subtitle_tracks' => $subtitle_tracks,
             'created_at'     => date('Y-m-d'),
         );
         $eps[] = $newEp;
@@ -113,6 +132,24 @@ include __DIR__ . '/header.php';
         <div class="form-group">
             <label>Thumbnail URL</label>
             <input type="text" name="thumbnail" value="<?php echo isset($_POST['thumbnail']) ? htmlspecialchars($_POST['thumbnail'], ENT_QUOTES) : ''; ?>" placeholder="https://...">
+        </div>
+
+        <div class="form-group">
+            <label>Download URL (optional)</label>
+            <input type="text" name="download_url" value="<?php echo isset($_POST['download_url']) ? htmlspecialchars($_POST['download_url'], ENT_QUOTES) : ''; ?>" placeholder="https://...">
+            <small style="color:#8b8b9e;">Shown as a “Download Episode” button on the watch page.</small>
+        </div>
+
+        <div class="form-group">
+            <label>Backup Stream URLs (one per line, optional)</label>
+            <textarea name="alt_sources" rows="3"><?php echo isset($_POST['alt_sources']) ? htmlspecialchars($_POST['alt_sources'], ENT_QUOTES) : ''; ?></textarea>
+            <small style="color:#8b8b9e;">Used automatically if the main stream fails.</small>
+        </div>
+
+        <div class="form-group">
+            <label>Subtitle Tracks (one per line: lang|label|url)</label>
+            <textarea name="subtitle_tracks" rows="3" placeholder="en|English|https://example.com/en.vtt"><?php echo isset($_POST['subtitle_tracks']) ? htmlspecialchars($_POST['subtitle_tracks'], ENT_QUOTES) : ''; ?></textarea>
+            <small style="color:#8b8b9e;">WebVTT files. Example line: en|English|https://site.com/sub.vtt</small>
         </div>
 
         <div style="display:flex; gap:10px;">
