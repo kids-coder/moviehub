@@ -665,17 +665,38 @@ function outputJsonLd($item, $type) {
         'image'       => isset($item['poster']) ? $item['poster'] : '',
     );
     if (isset($item['year'])) { $schema['datePublished'] = $item['year']; }
-    if (isset($item['rating']) && $item['rating'] !== '') {
+    $ratingCount = isset($item['rating_count']) ? intval($item['rating_count']) : 0;
+    if (isset($item['rating']) && $item['rating'] !== '' && $ratingCount > 0) {
         $schema['aggregateRating'] = array(
             '@type' => 'AggregateRating',
             'ratingValue' => $item['rating'],
             'bestRating' => '10',
-            'ratingCount' => '1',
+            'ratingCount' => $ratingCount,
         );
     }
+    $schema['url'] = SITE_URL . (($type === 'anime') ? '/anime-watch.php?slug=' : '/movie.php?slug=') . urlencode(isset($item['slug']) ? $item['slug'] : '');
     if (isset($item['genre']) && is_array($item['genre'])) {
         $schema['genre'] = implode(', ', $item['genre']);
     }
+    echo '<script type="application/ld+json">' . json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>' . "\n";
+}
+
+/**
+ * Output homepage WebSite schema with a real site search action.
+ */
+function outputWebsiteJsonLd() {
+    $schema = array(
+        '@context' => 'https://schema.org',
+        '@type' => 'WebSite',
+        'name' => SITE_NAME,
+        'url' => SITE_URL,
+        'description' => SITE_DESC,
+        'potentialAction' => array(
+            '@type' => 'SearchAction',
+            'target' => SITE_URL . '/search.php?q={search_term_string}',
+            'query-input' => 'required name=search_term_string',
+        ),
+    );
     echo '<script type="application/ld+json">' . json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>' . "\n";
 }
 

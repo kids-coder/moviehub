@@ -6,6 +6,27 @@ if (!defined('BDMOVIEHUB')) {
     define('BDMOVIEHUB', true);
 }
 
+// Operational tools must never be reachable on the public site.
+$__scriptBase = basename(isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : '');
+if (in_array($__scriptBase, array('setup.php', 'debug.php', 'test.php', 'diagnostics.php'), true)) {
+    http_response_code(404);
+    exit('Not found');
+}
+unset($__scriptBase);
+
+// Send baseline headers before any page partial can produce output.
+$__isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+    || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: SAMEORIGIN');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
+header("Content-Security-Policy: default-src 'self'; base-uri 'self'; form-action 'self'; img-src 'self' https: data:; media-src 'self' https: blob:; frame-src 'self' https://www.youtube.com https://player.vimeo.com https://www.dailymotion.com https://www.facebook.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com data:; connect-src 'self' https: wss:; object-src 'none'; upgrade-insecure-requests");
+if ($__isHttps) {
+    header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+}
+unset($__isHttps);
+
 // ===== ERROR HANDLING =====
 // Always show errors during initial setup. Once the site is working, change to false.
 if (!defined('DEBUG_MODE')) {
@@ -66,7 +87,7 @@ if (session_status() === PHP_SESSION_NONE) {
     }
     // Harden session cookie: HttpOnly + SameSite=Lax + Secure (when HTTPS)
     $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-        || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+        || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
     if (PHP_VERSION_ID >= 70300) {
         session_set_cookie_params(array(
             'lifetime' => 86400,
@@ -84,7 +105,7 @@ if (session_status() === PHP_SESSION_NONE) {
 // ===== SITE IDENTITY =====
 define('SITE_NAME', 'BDMovieHub');
 define('SITE_URL', 'https://moviehub.gamer.gd');
-define('SITE_DESC', 'Free Movies & Anime Streaming');
+define('SITE_DESC', 'Discover Bangla movies, series, anime, trailers, genres and the latest releases on BDMovieHub.');
 
 // ===== THEME COLORS =====
 define('PRIMARY_COLOR', '#469AFF');   // Blue - Movies

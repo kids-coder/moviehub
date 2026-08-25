@@ -18,7 +18,15 @@ AddDefaultCharset UTF-8
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteRule ^data/ - [F,L]
+    # These tools are for local installation/debugging and must not be public.
+    RewriteRule ^(?:setup|debug|test|diagnostics)\.php$ - [R=404,L,NC]
 </IfModule>
+
+# Never serve application source, local configuration, or session files.
+<FilesMatch "^(?:config|functions|bootstrap)\.php$|^\.env|^sess_">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
 
 # Serve JSON files with the correct MIME type (some hosts default to text/plain)
 <IfModule mod_mime.c>
@@ -64,8 +72,8 @@ FileETag None
 <IfModule mod_headers.c>
     Header set X-Content-Type-Options "nosniff"
     Header set X-Frame-Options "SAMEORIGIN"
-    # no-referrer-when-downgrade: lets embed hosts (abyssplayer, vidstream,
-    # doodstream, etc.) see the referer so they accept the iframe embed,
-    # but still strips the referer on http->https downgrades.
-    Header set Referrer-Policy "no-referrer-when-downgrade"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; form-action 'self'; img-src 'self' https: data:; media-src 'self' https: blob:; frame-src 'self' https://www.youtube.com https://player.vimeo.com https://www.dailymotion.com https://www.facebook.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com data:; connect-src 'self' https: wss:; object-src 'none'; upgrade-insecure-requests"
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" "expr=%{HTTPS} == 'on'"
 </IfModule>

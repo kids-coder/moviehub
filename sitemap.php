@@ -5,7 +5,6 @@ require_once __DIR__ . '/config.php';
 // Disable output buffering and set XML header
 while (ob_get_level() > 0) { ob_end_clean(); }
 header('Content-Type: application/xml; charset=utf-8');
-header('X-Robots-Tag: noindex');
 
 // Read site_url from settings (admin-configurable), fall back to constant, then to detected URL
 $__settings = getSettings();
@@ -32,6 +31,7 @@ $staticPages = array(
     array('loc' => $siteBase . '/top-rated.php', 'priority' => '0.7', 'freq' => 'weekly'),
     array('loc' => $siteBase . '/favorites.php', 'priority' => '0.4', 'freq' => 'monthly'),
     array('loc' => $siteBase . '/contact.php', 'priority' => '0.5', 'freq' => 'monthly'),
+    array('loc' => $siteBase . '/about.php', 'priority' => '0.5', 'freq' => 'yearly'),
     array('loc' => $siteBase . '/dmca.php', 'priority' => '0.3', 'freq' => 'yearly'),
     array('loc' => $siteBase . '/privacy.php', 'priority' => '0.3', 'freq' => 'yearly'),
     array('loc' => $siteBase . '/terms.php', 'priority' => '0.3', 'freq' => 'yearly'),

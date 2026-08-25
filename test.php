@@ -1,4 +1,6 @@
 <?php
+http_response_code(404);
+exit('Not found');
 // BDMovieHub - test.php
 // A MINIMAL PHP page to verify that PHP is working on this host.
 // Visit: https://yoursite.com/test.php

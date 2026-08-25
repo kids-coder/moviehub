@@ -71,6 +71,7 @@ $footerText   = isset($settings['footer_text']) ? $settings['footer_text'] : '';
                     <li><a href="<?php e(BASE_URL); ?>/genres.php">Genres</a></li>
                     <li><a href="<?php e(BASE_URL); ?>/anime-schedule.php">Schedule</a></li>
                     <li><a href="<?php e(BASE_URL); ?>/favorites.php">My Favorites</a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/request.php">Request a Title</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -101,6 +102,13 @@ $footerText   = isset($settings['footer_text']) ? $settings['footer_text'] : '';
 
 <script src="<?php e(ASSETS_URL); ?>/js/ui.js"></script>
 <script src="<?php e(ASSETS_URL); ?>/js/features.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+        navigator.serviceWorker.register('<?php e(BASE_URL); ?>/sw.js').catch(function () {});
+    });
+}
+</script>
 <?php if (isset($loadPlayerJs) && $loadPlayerJs): ?>
 <script src="<?php e(ASSETS_URL); ?>/js/player.js"></script>
 <?php endif; ?>

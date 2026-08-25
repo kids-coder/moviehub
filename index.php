@@ -5,8 +5,8 @@
 require_once __DIR__ . '/config.php';
 
 $pageSection = 'home';
-$pageTitle   = 'Home';
-$ogTitle     = SITE_NAME . ' - Free Movies & Anime Streaming';
+$pageTitle   = SITE_NAME . ' - Bangla Movies, Series & Anime';
+$ogTitle     = SITE_NAME . ' - Bangla Movies, Series & Anime';
 $ogDescription = SITE_DESC;
 
 // All data calls are wrapped to be fail-safe
@@ -68,6 +68,7 @@ if (!empty($animeList)) {
 $latestAnime = array_slice($animeList, 0, 10);
 
 include __DIR__ . '/header.php';
+outputWebsiteJsonLd();
 ?>
 
 <!-- Hero Slider -->

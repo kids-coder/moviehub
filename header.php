@@ -28,8 +28,9 @@ $logoUrl = isset($settings['logo_url']) ? $settings['logo_url'] : '';
 // SEO meta tags (optional - pages can set $ogTitle etc.)
 $ogTitle = isset($ogTitle) ? $ogTitle : $pageTitle;
 $ogDescription = isset($ogDescription) ? $ogDescription : (isset($settings['description']) ? $settings['description'] : SITE_DESC);
-$ogImage = isset($ogImage) ? $ogImage : '';
+$ogImage = isset($ogImage) ? $ogImage : (isset($settings['seo_og_image']) ? $settings['seo_og_image'] : '');
 $ogUrl = isset($ogUrl) ? $ogUrl : currentUrl();
+$seoKeywords = !empty($settings['seo_keywords']) ? $settings['seo_keywords'] : 'Bangla movies, movies, series, anime, trailers, genres';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -38,7 +39,7 @@ $ogUrl = isset($ogUrl) ? $ogUrl : currentUrl();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php e($pageTitle); ?> - <?php e(isset($settings['site_name']) ? $settings['site_name'] : SITE_NAME); ?></title>
     <meta name="description" content="<?php e($ogDescription); ?>">
-    <meta name="keywords" content="movies, anime, streaming, free movies, watch anime, BDMovieHub, watch online">
+    <meta name="keywords" content="<?php e($seoKeywords); ?>">
     <meta name="author" content="<?php e(isset($settings['site_name']) ? $settings['site_name'] : SITE_NAME); ?>">
     <meta name="robots" content="index, follow">
 
@@ -64,6 +65,9 @@ $ogUrl = isset($ogUrl) ? $ogUrl : currentUrl();
     <link rel="icon" type="image/svg+xml" href="<?php e($faviconSvg); ?>">
     <link rel="alternate" type="application/rss+xml" title="<?php e(isset($settings['site_name']) ? $settings['site_name'] : SITE_NAME); ?> RSS" href="<?php e(BASE_URL); ?>/rss.php">
     <link rel="sitemap" type="application/xml" href="<?php e(BASE_URL); ?>/sitemap.php">
+    <link rel="manifest" href="<?php e(BASE_URL); ?>/manifest.json">
+    <meta name="theme-color" content="#469AFF">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?php e(ASSETS_URL); ?>/css/style.css">
@@ -109,6 +113,7 @@ $ogUrl = isset($ogUrl) ? $ogUrl : currentUrl();
             <li><a href="<?php e(BASE_URL); ?>/trending.php" class="<?php echo $pageSection === 'trending' ? 'active' : ''; ?>">Trending</a></li>
             <li><a href="<?php e(BASE_URL); ?>/anime-schedule.php" class="<?php echo $pageSection === 'schedule' ? 'active' : ''; ?>">Schedule</a></li>
             <li><a href="<?php e(BASE_URL); ?>/genres.php" class="<?php echo $pageSection === 'genres' ? 'active' : ''; ?>">Genres</a></li>
+            <li><a href="<?php e(BASE_URL); ?>/request.php" class="<?php echo $pageSection === 'request' ? 'active' : ''; ?>">Request</a></li>
         </ul>
         <div class="nav-actions">
             <div class="nav-search-wrap">

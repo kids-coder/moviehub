@@ -1,4 +1,6 @@
 <?php
+http_response_code(404);
+exit('Not found');
 // BDMovieHub - debug.php
 // Shows server info, PHP config, and any errors that may be blocking the site.
 // Visit: https://yoursite.com/debug.php
