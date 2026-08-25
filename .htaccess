@@ -1,0 +1,71 @@
+# BDMovieHub - Root .htaccess
+# Minimal, InfinityFree-safe configuration.
+
+# Disable directory listing (safe on all hosts)
+Options -Indexes
+
+# Default character set
+AddDefaultCharset UTF-8
+
+# Protect backup / temp / log files from being downloaded
+<FilesMatch "\.(bak|swp|tmp|log|sql)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Protect the /data directory (JSON storage)
+# Allow access to no files inside /data via HTTP
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^data/ - [F,L]
+</IfModule>
+
+# Serve JSON files with the correct MIME type (some hosts default to text/plain)
+<IfModule mod_mime.c>
+    AddType application/json .json
+    AddType application/rss+xml .rss
+    AddType application/xml .xml
+</IfModule>
+
+# Make sure index.php is the default document
+<IfModule mod_dir.c>
+    DirectoryIndex index.php index.html
+</IfModule>
+
+# Custom 404 error page
+ErrorDocument 404 /404.php
+
+# Disable ETags (better caching with Last-Modified)
+FileETag None
+
+# Set cache headers for static assets (CSS, JS, images) - 7 days
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 7 days"
+    ExpiresByType application/javascript "access plus 7 days"
+    ExpiresByType image/jpeg "access plus 30 days"
+    ExpiresByType image/png "access plus 30 days"
+    ExpiresByType image/gif "access plus 30 days"
+    ExpiresByType image/svg+xml "access plus 30 days"
+    ExpiresByType image/webp "access plus 30 days"
+    ExpiresByType application/font-woff "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+</IfModule>
+
+# Gzip compression (safe on most hosts including InfinityFree)
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml
+    AddOutputFilterByType DEFLATE application/javascript application/json
+    AddOutputFilterByType DEFLATE application/xml application/rss+xml
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# Security headers (basic)
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    # no-referrer-when-downgrade: lets embed hosts (abyssplayer, vidstream,
+    # doodstream, etc.) see the referer so they accept the iframe embed,
+    # but still strips the referer on http->https downgrades.
+    Header set Referrer-Policy "no-referrer-when-downgrade"
+</IfModule>
