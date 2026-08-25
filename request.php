@@ -7,6 +7,8 @@ $pageTitle = 'Request a Title';
 $sent = false;
 $errors = array();
 
+$requestsFile = DATA_DIR . '/requests.json';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verifyCsrf()) {
         $errors[] = 'Security token expired. Please refresh the page and try again.';
@@ -22,23 +24,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (mb_strlen($title, 'UTF-8') > 160) { $title = mb_substr($title, 0, 160, 'UTF-8'); }
         if (mb_strlen($details, 'UTF-8') > 1000) { $details = mb_substr($details, 0, 1000, 'UTF-8'); }
         if (empty($errors)) {
-            $requestsFile = DATA_DIR . '/requests.json';
             $requests = getData($requestsFile);
-            $requests[] = array(
-                'id' => 'rq' . (count($requests) + 1) . '-' . substr(md5(uniqid('', true)), 0, 6),
-                'title' => $title,
-                'type' => $type,
-                'language' => $language,
-                'email' => $email,
-                'details' => $details,
-                'date' => date('Y-m-d H:i:s'),
-                'status' => 'pending',
-            );
+
+            // Duplicate detection: merge with an existing pending request
+            $__norm = strtolower(preg_replace('/\s+/', ' ', $title));
+            $__merged = false;
+            foreach ($requests as $i => $r) {
+                if ((isset($r['status']) ? $r['status'] : '') === 'pending'
+                    && strtolower(preg_replace('/\s+/', ' ', isset($r['title']) ? $r['title'] : '')) === $__norm) {
+                    $requests[$i]['votes'] = intval(isset($r['votes']) ? $r['votes'] : 0) + 1;
+                    $__merged = true;
+                    break;
+                }
+            }
+
+            if (!$__merged) {
+                $requests[] = array(
+                    'id' => 'rq' . (count($requests) + 1) . '-' . substr(md5(uniqid('', true)), 0, 6),
+                    'title' => $title,
+                    'type' => $type,
+                    'language' => $language,
+                    'email' => $email,
+                    'details' => $details,
+                    'date' => date('Y-m-d H:i:s'),
+                    'status' => 'pending',
+                    'votes' => 1,
+                );
+            }
             if (saveData($requestsFile, $requests)) { $sent = true; }
             else { $errors[] = 'The request could not be saved. Please try again later.'; }
         }
     }
 }
+
+// Recent public requests (pending/approved only, no emails)
+$__recentRequests = getData($requestsFile);
+usort($__recentRequests, function ($a, $b) { return strcmp(isset($b['date']) ? $b['date'] : '', isset($a['date']) ? $a['date'] : ''); });
+$__recentRequests = array_slice(array_filter($__recentRequests, function ($r) {
+    return in_array((isset($r['status']) ? $r['status'] : ''), array('pending', 'approved'), true);
+}), 0, 8);
 
 include __DIR__ . '/header.php';
 ?>
@@ -61,6 +85,23 @@ include __DIR__ . '/header.php';
                 <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit Request</button>
             </form>
         </div>
+
+        <?php if (!empty($__recentRequests)): ?>
+        <div style="margin-top:32px;">
+            <h2 class="section-title" style="font-size:20px; margin-bottom:14px;">Recent Requests</h2>
+            <div style="display:grid; gap:10px;">
+                <?php foreach ($__recentRequests as $r): ?>
+                    <div class="admin-card" style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px;">
+                        <div>
+                            <strong><?php e(isset($r['title']) ? $r['title'] : ''); ?></strong>
+                            <span style="color:var(--muted); font-size:13px;"> — <?php e(ucfirst(isset($r['type']) ? $r['type'] : '')); ?><?php if (!empty($r['language'])): ?> · <?php e($r['language']); ?><?php endif; ?></span>
+                        </div>
+                        <span class="genre-pill active" title="Community votes"><i class="fas fa-thumbs-up"></i> <?php echo intval(isset($r['votes']) ? $r['votes'] : 1); ?></span>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php endif; ?>
     </div>
 </section>
 <?php include __DIR__ . '/footer.php'; ?>

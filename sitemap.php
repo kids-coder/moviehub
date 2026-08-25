@@ -32,6 +32,8 @@ $staticPages = array(
     array('loc' => $siteBase . '/favorites.php', 'priority' => '0.4', 'freq' => 'monthly'),
     array('loc' => $siteBase . '/contact.php', 'priority' => '0.5', 'freq' => 'monthly'),
     array('loc' => $siteBase . '/about.php', 'priority' => '0.5', 'freq' => 'yearly'),
+    array('loc' => $siteBase . '/series.php', 'priority' => '0.8', 'freq' => 'daily'),
+    array('loc' => $siteBase . '/request.php', 'priority' => '0.4', 'freq' => 'monthly'),
     array('loc' => $siteBase . '/dmca.php', 'priority' => '0.3', 'freq' => 'yearly'),
     array('loc' => $siteBase . '/privacy.php', 'priority' => '0.3', 'freq' => 'yearly'),
     array('loc' => $siteBase . '/terms.php', 'priority' => '0.3', 'freq' => 'yearly'),
@@ -46,19 +48,20 @@ foreach (getPublishedPages() as $p) {
     );
 }
 
-// Movies
+// Movies (clean URLs)
 foreach (getPublishedMovies() as $m) {
+    $__path = ((isset($m['kind']) ? $m['kind'] : 'movie') === 'series') ? '/series/' : '/movie/';
     $staticPages[] = array(
-        'loc' => $siteBase . '/movie.php?slug=' . urlencode(isset($m['slug']) ? $m['slug'] : ''),
+        'loc' => $siteBase . $__path . urlencode(isset($m['slug']) ? $m['slug'] : ''),
         'priority' => '0.8', 'freq' => 'weekly',
         'lastmod' => isset($m['created_at']) ? $m['created_at'] : $today,
     );
 }
 
-// Anime
+// Anime (clean URLs)
 foreach (getPublishedAnime() as $a) {
     $staticPages[] = array(
-        'loc' => $siteBase . '/anime-watch.php?slug=' . urlencode(isset($a['slug']) ? $a['slug'] : ''),
+        'loc' => $siteBase . '/anime/' . urlencode(isset($a['slug']) ? $a['slug'] : ''),
         'priority' => '0.8', 'freq' => 'weekly',
         'lastmod' => isset($a['created_at']) ? $a['created_at'] : $today,
     );

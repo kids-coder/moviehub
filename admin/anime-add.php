@@ -22,10 +22,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $studio        = isset($_POST['studio']) ? trim($_POST['studio']) : '';
     $featured      = isset($_POST['featured']) ? true : false;
     $genreArr      = isset($_POST['genres']) ? $_POST['genres'] : array();
+    $altTitle      = isset($_POST['alternate_title']) ? trim($_POST['alternate_title']) : '';
+    $language      = isset($_POST['language']) ? trim($_POST['language']) : '';
 
     if ($title === '') { $errors[] = 'Title is required.'; }
     if ($slug === '') { $slug = slugify($title); }
     else { $slug = slugify($slug); }
+
+    // Duplicate-title detection
+    $__normTitle = strtolower(preg_replace('/\s+/', ' ', $title));
+    foreach (getData(FILE_ANIME) as $__a) {
+        if (strtolower(preg_replace('/\s+/', ' ', isset($__a['title']) ? $__a['title'] : '')) === $__normTitle) {
+            $errors[] = 'An anime with this title already exists: "' . (isset($__a['title']) ? $__a['title'] : '') . '".';
+            break;
+        }
+    }
 
     if (empty($errors)) {
         $animeList = getData(FILE_ANIME);
@@ -35,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $newAnime = array(
             'id'            => generateId($animeList, 'a'),
             'title'         => $title,
+            'alternate_title' => $altTitle,
             'slug'          => $slug,
             'poster'        => $poster,
             'banner'        => $banner,
@@ -48,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'status_pub'    => $status_pub,
             'featured'      => $featured,
             'created_at'    => date('Y-m-d'),
+            'language'      => $language,
         );
         $animeList[] = $newAnime;
         if (saveData(FILE_ANIME, $animeList)) {
@@ -89,6 +102,17 @@ include __DIR__ . '/header.php';
             <div class="form-group">
                 <label>Title <span style="color:#e74c3c;">*</span></label>
                 <input type="text" name="title" required value="<?php echo isset($_POST['title']) ? htmlspecialchars($_POST['title'], ENT_QUOTES) : ''; ?>">
+            </div>
+            <div class="form-group">
+                <label>Alternate Title (Bangla/English)</label>
+                <input type="text" name="alternate_title" value="<?php echo isset($_POST['alternate_title']) ? htmlspecialchars($_POST['alternate_title'], ENT_QUOTES) : ''; ?>">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Language</label>
+                <input type="text" name="language" value="<?php echo isset($_POST['language']) ? htmlspecialchars($_POST['language'], ENT_QUOTES) : ''; ?>" placeholder="Japanese, Bangla Dub">
             </div>
             <div class="form-group">
                 <label>Slug (URL)</label>

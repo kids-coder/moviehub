@@ -226,6 +226,8 @@ $epTitle = $currentEp && isset($currentEp['title']) ? $currentEp['title'] : '';
                     <select name="reason" style="width:100%; padding:8px 12px; background:var(--bg); color:var(--text); border:1px solid var(--border); border-radius:6px;">
                         <option value="broken">Video not playing</option>
                         <option value="wrong">Wrong episode</option>
+                        <option value="subtitles">Missing subtitles</option>
+                        <option value="audio">Audio problem</option>
                         <option value="quality">Poor quality</option>
                         <option value="other">Other</option>
                     </select>

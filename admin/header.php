@@ -315,6 +315,9 @@ $faviconSvg = "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20
         <a href="<?php e($adminUrl); ?>/comments.php" class="sidebar-link <?php echo $adminPage === 'comments' ? 'active' : ''; ?>">
             <i class="fas fa-comments"></i> Messages
         </a>
+        <a href="<?php e($adminUrl); ?>/requests.php" class="sidebar-link <?php echo $adminPage === 'requests' ? 'active' : ''; ?>">
+            <i class="fas fa-inbox"></i> Title Requests
+        </a>
         <div class="sidebar-section">System</div>
         <a href="<?php e($adminUrl); ?>/import.php" class="sidebar-link <?php echo $adminPage === 'import' ? 'active' : ''; ?>">
             <i class="fas fa-file-import"></i> Import

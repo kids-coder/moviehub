@@ -19,6 +19,7 @@ $__isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
     || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: SAMEORIGIN');
+header('X-XSS-Protection: 1; mode=block');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
 header("Content-Security-Policy: default-src 'self'; base-uri 'self'; form-action 'self'; img-src 'self' https: data:; media-src 'self' https: blob:; frame-src 'self' https://www.youtube.com https://player.vimeo.com https://www.dailymotion.com https://www.facebook.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com data:; connect-src 'self' https: wss:; object-src 'none'; upgrade-insecure-requests");
@@ -163,3 +164,20 @@ define('ASSETS_URL', BASE_URL . '/assets');
 // ===== LOAD HELPERS + AUTO-CREATOR =====
 require_once __DIR__ . '/functions.php';
 require_once __DIR__ . '/bootstrap.php';
+
+// ===== CLEAN URL ROUTER FALLBACK =====
+// Lets /movie/{slug}, /series/{slug} and /anime/{slug} work even when the
+// web server cannot process mod_rewrite rules. Runs after helpers load so
+// routed pages have every function available.
+if (!isset($_GET['slug']) && isset($_SERVER['REQUEST_URI'])) {
+    $__path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    if (is_string($__path) && preg_match('#^' . preg_quote(BASE_URL, '#') . '/(movie|series|anime)/([A-Za-z0-9_-]+)/?$#', $__path, $__m)) {
+        $_GET['slug'] = rawurldecode($__m[2]);
+        $__map = array('movie' => 'movie.php', 'series' => 'series.php', 'anime' => 'anime-watch.php');
+        $__script = $__map[$__m[1]];
+        unset($__path, $__m, $__map);
+        require __DIR__ . '/' . $__script;
+        exit;
+    }
+    unset($__path);
+}

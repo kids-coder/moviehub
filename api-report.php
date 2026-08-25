@@ -70,7 +70,7 @@ if (!in_array($itemType, $validTypes, true)) {
     exit;
 }
 // Whitelist reason
-$validReasons = array('broken', 'wrong', 'quality', 'other');
+$validReasons = array('broken', 'wrong', 'subtitles', 'audio', 'quality', 'other');
 if (!in_array($reason, $validReasons, true)) {
     $reason = 'other';
 }

@@ -18,8 +18,57 @@ $counts = array(
 $recentMovies = array_slice(getData(FILE_MOVIES), 0, 5);
 $recentAnime  = array_slice(getData(FILE_ANIME), 0, 5);
 
+// Content validation: published items missing key metadata
+$__validationIssues = array();
+foreach (getData(FILE_MOVIES) as $__m) {
+    if ((isset($__m['status']) ? $__m['status'] : '') !== 'published') { continue; }
+    $__missing = array();
+    foreach (array('poster', 'description', 'year', 'genre', 'stream_url') as $__f) {
+        $v = isset($__m[$__f]) ? $__m[$__f] : '';
+        if ($v === '' || $v === array()) { $__missing[] = $__f; }
+    }
+    if (!empty($__missing)) {
+        $__validationIssues[] = array('type' => 'movie', 'title' => isset($__m['title']) ? $__m['title'] : 'Untitled', 'id' => isset($__m['id']) ? $__m['id'] : '', 'missing' => $__missing);
+    }
+}
+foreach (getData(FILE_ANIME) as $__a) {
+    if ((isset($__a['status_pub']) ? $__a['status_pub'] : '') !== 'published') { continue; }
+    $__missing = array();
+    foreach (array('poster', 'description', 'episode_count') as $__f) {
+        $v = isset($__a[$__f]) ? $__a[$__f] : '';
+        if ($v === '' || $v === array() || $v === 0) { $__missing[] = $__f; }
+    }
+    if (!empty($__missing)) {
+        $__validationIssues[] = array('type' => 'anime', 'title' => isset($__a['title']) ? $__a['title'] : 'Untitled', 'id' => isset($__a['id']) ? $__a['id'] : '', 'missing' => $__missing);
+    }
+}
+
 include __DIR__ . '/header.php';
 ?>
+
+<!-- Content Quality Validation -->
+<?php if (!empty($__validationIssues)): ?>
+<div class="admin-card" style="border-left:4px solid #f1c40f;">
+    <h2 style="font-size:18px; margin-bottom:12px;"><i class="fas fa-exclamation-triangle" style="color:#f1c40f;"></i> Content Quality: <?php echo count($__validationIssues); ?> item(s) need attention</h2>
+    <div class="data-table-wrap">
+        <table class="data-table">
+            <thead><tr><th>Type</th><th>Title</th><th>Missing Fields</th><th>Action</th></tr></thead>
+            <tbody>
+                <?php foreach (array_slice($__validationIssues, 0, 10) as $__vi): ?>
+                <tr>
+                    <td><?php e(ucfirst($__vi['type'])); ?></td>
+                    <td><?php e($__vi['title']); ?></td>
+                    <td><code style="color:#f1c40f;"><?php e(implode(', ', $__vi['missing'])); ?></code></td>
+                    <td>
+                        <a href="<?php e($adminUrl); ?>/<?php echo $__vi['type'] === 'movie' ? 'movie' : 'anime'; ?>-edit.php?id=<?php echo urlencode($__vi['id']); ?>" class="btn-admin btn-admin-outline btn-admin-sm"><i class="fas fa-edit"></i> Fix</a>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<?php endif; ?>
 
 <!-- Stats Grid -->
 <div class="stats-grid">

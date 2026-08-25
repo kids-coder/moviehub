@@ -16,18 +16,19 @@ $siteBase = $scheme . '://' . $host . BASE_URL;
 // Combine recently added items
 $items = array();
 foreach (getPublishedMovies() as $m) {
+    $__path = ((isset($m['kind']) ? $m['kind'] : 'movie') === 'series') ? '/series/' : '/movie/';
     $items[] = array(
         'title'     => isset($m['title']) ? $m['title'] : 'Untitled',
-        'link'      => $siteBase . '/movie.php?slug=' . urlencode(isset($m['slug']) ? $m['slug'] : ''),
+        'link'      => $siteBase . $__path . urlencode(isset($m['slug']) ? $m['slug'] : ''),
         'desc'      => isset($m['description']) ? $m['description'] : '',
         'date'      => isset($m['created_at']) ? $m['created_at'] : date('Y-m-d'),
-        'category'  => 'Movie',
+        'category'  => (isset($m['kind']) ? $m['kind'] : 'movie') === 'series' ? 'Series' : 'Movie',
     );
 }
 foreach (getPublishedAnime() as $a) {
     $items[] = array(
         'title'     => isset($a['title']) ? $a['title'] : 'Untitled',
-        'link'      => $siteBase . '/anime-watch.php?slug=' . urlencode(isset($a['slug']) ? $a['slug'] : ''),
+        'link'      => $siteBase . '/anime/' . urlencode(isset($a['slug']) ? $a['slug'] : ''),
         'desc'      => isset($a['description']) ? $a['description'] : '',
         'date'      => isset($a['created_at']) ? $a['created_at'] : date('Y-m-d'),
         'category'  => 'Anime',

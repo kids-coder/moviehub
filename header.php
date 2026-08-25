@@ -109,6 +109,7 @@ $seoKeywords = !empty($settings['seo_keywords']) ? $settings['seo_keywords'] : '
         <ul class="nav-links">
             <li><a href="<?php e(BASE_URL); ?>/index.php" class="<?php echo $pageSection === 'home' ? 'active' : ''; ?>">Home</a></li>
             <li><a href="<?php e(BASE_URL); ?>/search.php" class="<?php echo $pageSection === 'movies' ? 'active' : ''; ?>">Movies</a></li>
+            <li><a href="<?php e(BASE_URL); ?>/series.php" class="<?php echo $pageSection === 'series' ? 'active' : ''; ?>">Series</a></li>
             <li><a href="<?php e(BASE_URL); ?>/anime.php" class="<?php echo $pageSection === 'anime' ? 'active' : ''; ?>">Anime</a></li>
             <li><a href="<?php e(BASE_URL); ?>/trending.php" class="<?php echo $pageSection === 'trending' ? 'active' : ''; ?>">Trending</a></li>
             <li><a href="<?php e(BASE_URL); ?>/anime-schedule.php" class="<?php echo $pageSection === 'schedule' ? 'active' : ''; ?>">Schedule</a></li>
@@ -132,12 +133,16 @@ $seoKeywords = !empty($settings['seo_keywords']) ? $settings['seo_keywords'] : '
 <div class="mobile-menu">
     <a href="<?php e(BASE_URL); ?>/index.php">Home</a>
     <a href="<?php e(BASE_URL); ?>/search.php">Movies</a>
+    <a href="<?php e(BASE_URL); ?>/series.php">Series</a>
     <a href="<?php e(BASE_URL); ?>/anime.php">Anime</a>
     <a href="<?php e(BASE_URL); ?>/trending.php">Trending</a>
     <a href="<?php e(BASE_URL); ?>/top-rated.php">Top Rated</a>
     <a href="<?php e(BASE_URL); ?>/genres.php">Genres</a>
     <a href="<?php e(BASE_URL); ?>/anime-schedule.php">Schedule</a>
     <a href="<?php e(BASE_URL); ?>/favorites.php">My Favorites</a>
+    <a href="<?php e(BASE_URL); ?>/request.php">Request a Title</a>
+    <a href="<?php e(BASE_URL); ?>/about.php">About Us</a>
+    <a href="<?php e(BASE_URL); ?>/contact.php">Contact</a>
     <a href="<?php e(BASE_URL); ?>/search.php">Search</a>
     <?php if (!empty($pages)): ?>
         <?php foreach ($pages as $p): ?>

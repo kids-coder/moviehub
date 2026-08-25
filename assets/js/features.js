@@ -123,10 +123,24 @@
     window.addToHistory = function (item) {
         if (!item || !item.url || !item.title) { return; }
         var history = getHistory();
-        // Remove duplicates by url
+        // Remove duplicates by url, keep existing progress if not provided
+        var prev = null;
+        for (var i = 0; i < history.length; i++) {
+            if (history[i].url === item.url) { prev = history[i]; break; }
+        }
         history = history.filter(function (h) { return h.url !== item.url; });
+        if (prev && typeof item.progress !== 'number') {
+            item.progress = prev.progress || 0;
+            item.episode = prev.episode || '';
+        }
         history.unshift(item);
         saveHistory(history);
+    };
+    window.removeHistoryItem = function (url) {
+        var history = getHistory().filter(function (h) { return h.url !== url; });
+        saveHistory(history);
+        window.renderHistory('recently-watched');
+        if (window.showToast) { showToast('Removed from Continue Watching'); }
     };
     window.renderHistory = function (containerId) {
         var container = document.getElementById(containerId);
@@ -143,15 +157,29 @@
         var html = '';
         for (var i = 0; i < history.length; i++) {
             var h = history[i];
-            html += '<a href="' + escapeAttr(h.url) + '" class="movie-card">' +
+            var pct = Math.max(0, Math.min(100, parseInt(h.progress || 0, 10)));
+            html += '<div class="movie-card" style="position:relative;">' +
+                '<a href="' + escapeAttr(h.url) + '">' +
                 '<div class="card-poster">' +
                     '<img src="' + escapeAttr(h.poster || '') + '" alt="' + escapeAttr(h.title || '') + '" loading="lazy">' +
-                    '<div class="card-overlay"><button class="card-play-btn"><i class="fas fa-play"></i></button></div>' +
+                    '<div class="card-overlay"><button class="card-play-btn" aria-label="Resume"><i class="fas fa-play"></i></button></div>' +
                 '</div>' +
-                '<div class="card-info"><div class="card-title">' + escapeHtml(h.title || '') + '</div></div>' +
-            '</a>';
+                '<div class="card-info">' +
+                    '<div class="card-title">' + escapeHtml(h.title || '') + '</div>' +
+                    (h.episode ? '<div class="card-meta"><span>EP ' + escapeHtml(String(h.episode)) + '</span></div>' : '') +
+                    (pct > 0 ? '<div style="height:4px;background:var(--border);border-radius:2px;margin-top:6px;"><div style="width:' + pct + '%;height:4px;background:var(--primary);border-radius:2px;"></div></div>' : '') +
+                '</div>' +
+                '</a>' +
+                '<button type="button" class="history-remove" data-url="' + escapeAttr(h.url) + '" title="Remove" aria-label="Remove from Continue Watching" style="position:absolute;top:8px;right:8px;z-index:5;background:rgba(10,10,15,0.8);border:none;color:#fff;width:26px;height:26px;border-radius:50%;cursor:pointer;"><i class="fas fa-times"></i></button>' +
+            '</div>';
         }
         container.innerHTML = html;
+        var removes = container.querySelectorAll('.history-remove');
+        for (var j = 0; j < removes.length; j++) {
+            removes[j].addEventListener('click', function () {
+                window.removeHistoryItem(this.getAttribute('data-url'));
+            });
+        }
     };
 
     /* ---------- Clear history button (on homepage) ---------- */
@@ -389,6 +417,42 @@
                     url: window.location.pathname + window.location.search,
                 });
             }
+        }
+
+        // Resume playback + live progress tracking for the premium player
+        var video = document.getElementById('video-player');
+        if (video) {
+            var key = 'bdmh_progress_' + (window.location.pathname + window.location.search);
+            var savedPct = 0;
+            try { savedPct = parseInt(localStorage.getItem(key) || '0', 10) || 0; } catch (e) { savedPct = 0; }
+            var resumed = false;
+            video.addEventListener('loadedmetadata', function () {
+                if (!resumed && savedPct > 2 && savedPct < 95 && isFinite(video.duration) && video.duration > 0) {
+                    video.currentTime = (savedPct / 100) * video.duration;
+                }
+                resumed = true;
+            });
+            var lastSaved = 0;
+            video.addEventListener('timeupdate', function () {
+                if (!isFinite(video.duration) || video.duration <= 0) { return; }
+                var now = Date.now();
+                if (now - lastSaved > 3000) {
+                    lastSaved = now;
+                    var pct = Math.round((video.currentTime / video.duration) * 100);
+                    try { localStorage.setItem(key, String(pct)); } catch (e) {}
+                    if (favBtn && window.addToHistory) {
+                        window.addToHistory({
+                            type: favBtn.getAttribute('data-type'),
+                            id: favBtn.getAttribute('data-id'),
+                            title: favBtn.getAttribute('data-title'),
+                            poster: posterImg ? posterImg.getAttribute('src') : '',
+                            episode: new URLSearchParams(window.location.search).get('ep') || '',
+                            progress: pct,
+                            url: window.location.pathname + window.location.search,
+                        });
+                    }
+                }
+            });
         }
     });
 

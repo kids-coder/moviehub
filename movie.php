@@ -121,6 +121,25 @@ outputJsonLd($movie, 'movie');
 
                 <p class="movie-description"><?php e($mvDesc); ?></p>
 
+                <?php
+                    $__meta = array(
+                        'alternate_title' => array('Alternate Title', 'fas fa-language'),
+                        'country'         => array('Country', 'fas fa-globe'),
+                        'language'        => array('Language', 'fas fa-comment-dots'),
+                        'cast'            => array('Cast', 'fas fa-users'),
+                        'director'        => array('Director', 'fas fa-video'),
+                        'subtitles'       => array('Subtitles', 'fas fa-closed-captioning'),
+                        'legal_providers' => array('Watch On', 'fas fa-external-link-alt'),
+                    );
+                ?>
+                <div class="movie-extra-meta" style="margin:14px 0; font-size:13px; color:var(--muted); display:grid; gap:4px;">
+                    <?php foreach ($__meta as $key => $labelInfo): ?>
+                        <?php if (!empty($movie[$key])): ?>
+                            <div><i class="<?php e($labelInfo[1]); ?>" style="width:16px;"></i> <strong><?php e($labelInfo[0]); ?>:</strong> <?php e($movie[$key]); ?></div>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
+
                 <div class="movie-actions">
                     <?php if (!empty($mvStream)): ?>
                         <a href="#player" class="btn btn-primary"><i class="fas fa-play"></i> Watch Now</a>
@@ -192,8 +211,10 @@ outputJsonLd($movie, 'movie');
                 </div>
                 <div class="form-group" style="margin-bottom:10px;">
                     <select name="reason" style="width:100%; padding:8px 12px; background:var(--bg); color:var(--text); border:1px solid var(--border); border-radius:6px;">
-                        <option value="broken">Video not playing</option>
-                        <option value="wrong">Wrong video</option>
+                        <option value="broken">Video not loading</option>
+                        <option value="wrong">Wrong movie</option>
+                        <option value="subtitles">Missing subtitles</option>
+                        <option value="audio">Audio problem</option>
                         <option value="quality">Poor quality</option>
                         <option value="other">Other</option>
                     </select>

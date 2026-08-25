@@ -65,6 +65,7 @@ $footerText   = isset($settings['footer_text']) ? $settings['footer_text'] : '';
                 <ul>
                     <li><a href="<?php e(BASE_URL); ?>/index.php">Home</a></li>
                     <li><a href="<?php e(BASE_URL); ?>/search.php">Movies</a></li>
+                    <li><a href="<?php e(BASE_URL); ?>/series.php">Series</a></li>
                     <li><a href="<?php e(BASE_URL); ?>/anime.php">Anime</a></li>
                     <li><a href="<?php e(BASE_URL); ?>/trending.php">Trending</a></li>
                     <li><a href="<?php e(BASE_URL); ?>/top-rated.php">Top Rated</a></li>

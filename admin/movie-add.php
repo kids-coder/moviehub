@@ -24,10 +24,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status       = isset($_POST['status']) ? $_POST['status'] : 'published';
     $featured     = isset($_POST['featured']) ? true : false;
     $genreArr     = isset($_POST['genres']) ? $_POST['genres'] : array();
+    $kind         = isset($_POST['kind']) && in_array($_POST['kind'], array('movie', 'series'), true) ? $_POST['kind'] : 'movie';
+    $altTitle     = isset($_POST['alternate_title']) ? trim($_POST['alternate_title']) : '';
+    $country      = isset($_POST['country']) ? trim($_POST['country']) : '';
+    $language     = isset($_POST['language']) ? trim($_POST['language']) : '';
+    $cast         = isset($_POST['cast']) ? trim($_POST['cast']) : '';
+    $director     = isset($_POST['director']) ? trim($_POST['director']) : '';
+    $subtitles    = isset($_POST['subtitles']) ? trim($_POST['subtitles']) : '';
+    $providers    = isset($_POST['legal_providers']) ? trim($_POST['legal_providers']) : '';
 
     if ($title === '') { $errors[] = 'Title is required.'; }
     if ($slug === '') { $slug = slugify($title); }
     else { $slug = slugify($slug); }
+
+    // Duplicate-title detection (same normalized title)
+    $__normTitle = strtolower(preg_replace('/\s+/', ' ', $title));
+    foreach (getData(FILE_MOVIES) as $__m) {
+        if (strtolower(preg_replace('/\s+/', ' ', isset($__m['title']) ? $__m['title'] : '')) === $__normTitle) {
+            $errors[] = 'A movie with this title already exists: "' . (isset($__m['title']) ? $__m['title'] : '') . '".';
+            break;
+        }
+    }
 
     if (empty($errors)) {
         $movies = getData(FILE_MOVIES);
@@ -38,6 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $newMovie = array(
             'id'           => generateId($movies, 'm'),
             'title'        => $title,
+            'alternate_title' => $altTitle,
+            'kind'         => $kind,
             'slug'         => $slug,
             'poster'       => $poster,
             'banner'       => $banner,
@@ -53,6 +72,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'download_url' => $download_url,
             'featured'     => $featured,
             'created_at'   => date('Y-m-d'),
+            'country'      => $country,
+            'language'     => $language,
+            'cast'         => $cast,
+            'director'     => $director,
+            'subtitles'    => $subtitles,
+            'legal_providers' => $providers,
         );
         $movies[] = $newMovie;
         if (saveData(FILE_MOVIES, $movies)) {
@@ -97,9 +122,49 @@ include __DIR__ . '/header.php';
                 <input type="text" name="title" required value="<?php echo isset($_POST['title']) ? htmlspecialchars($_POST['title'], ENT_QUOTES) : ''; ?>">
             </div>
             <div class="form-group">
-                <label>Slug (URL)</label>
-                <input type="text" name="slug" value="<?php echo isset($_POST['slug']) ? htmlspecialchars($_POST['slug'], ENT_QUOTES) : ''; ?>" placeholder="auto-generated from title">
-                <div class="hint">Leave blank to auto-generate from title.</div>
+                <label>Alternate Title (Bangla/English)</label>
+                <input type="text" name="alternate_title" value="<?php echo isset($_POST['alternate_title']) ? htmlspecialchars($_POST['alternate_title'], ENT_QUOTES) : ''; ?>" placeholder="বাংলা শিরোনাম বা English alias">
+            </div>
+        </div>
+
+        <div class="form-row-3">
+            <div class="form-group">
+                <label>Kind</label>
+                <select name="kind">
+                    <?php $k = isset($_POST['kind']) ? $_POST['kind'] : 'movie'; ?>
+                    <option value="movie" <?php echo $k === 'movie' ? 'selected' : ''; ?>>Movie</option>
+                    <option value="series" <?php echo $k === 'series' ? 'selected' : ''; ?>>Series</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Country</label>
+                <input type="text" name="country" value="<?php echo isset($_POST['country']) ? htmlspecialchars($_POST['country'], ENT_QUOTES) : ''; ?>" placeholder="Bangladesh, India, USA">
+            </div>
+            <div class="form-group">
+                <label>Language</label>
+                <input type="text" name="language" value="<?php echo isset($_POST['language']) ? htmlspecialchars($_POST['language'], ENT_QUOTES) : ''; ?>" placeholder="Bangla, Hindi, English">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Cast</label>
+                <input type="text" name="cast" value="<?php echo isset($_POST['cast']) ? htmlspecialchars($_POST['cast'], ENT_QUOTES) : ''; ?>" placeholder="Actor 1, Actor 2">
+            </div>
+            <div class="form-group">
+                <label>Director</label>
+                <input type="text" name="director" value="<?php echo isset($_POST['director']) ? htmlspecialchars($_POST['director'], ENT_QUOTES) : ''; ?>">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Subtitles</label>
+                <input type="text" name="subtitles" value="<?php echo isset($_POST['subtitles']) ? htmlspecialchars($_POST['subtitles'], ENT_QUOTES) : ''; ?>" placeholder="Bangla, English">
+            </div>
+            <div class="form-group">
+                <label>Legal Watch Providers</label>
+                <input type="text" name="legal_providers" value="<?php echo isset($_POST['legal_providers']) ? htmlspecialchars($_POST['legal_providers'], ENT_QUOTES) : ''; ?>" placeholder="Netflix, Chorki, Hoichoi">
             </div>
         </div>
 

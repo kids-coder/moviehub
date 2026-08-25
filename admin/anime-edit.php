@@ -31,6 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $studio        = isset($_POST['studio']) ? trim($_POST['studio']) : '';
     $featured      = isset($_POST['featured']) ? true : false;
     $genreArr      = isset($_POST['genres']) ? $_POST['genres'] : array();
+    $altTitle      = isset($_POST['alternate_title']) ? trim($_POST['alternate_title']) : '';
+    $language      = isset($_POST['language']) ? trim($_POST['language']) : '';
 
     if ($title === '') { $errors[] = 'Title is required.'; }
     if ($slug === '') { $slug = slugify($title); }
@@ -40,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         foreach ($animeList as &$a) {
             if ($a['id'] === $id) {
                 $a['title']         = $title;
+                $a['alternate_title'] = $altTitle;
                 $a['slug']          = $slug;
                 $a['poster']        = $poster;
                 $a['banner']        = $banner;
@@ -52,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $a['aired']         = $aired;
                 $a['studio']        = $studio;
                 $a['featured']      = $featured;
+                $a['language']      = $language;
                 break;
             }
         }
@@ -111,6 +115,17 @@ include __DIR__ . '/header.php';
             <div class="form-group">
                 <label>Title <span style="color:#e74c3c;">*</span></label>
                 <input type="text" name="title" required value="<?php e(isset($anime['title']) ? $anime['title'] : ''); ?>">
+            </div>
+            <div class="form-group">
+                <label>Alternate Title (Bangla/English)</label>
+                <input type="text" name="alternate_title" value="<?php e(isset($anime['alternate_title']) ? $anime['alternate_title'] : ''); ?>">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Language</label>
+                <input type="text" name="language" value="<?php e(isset($anime['language']) ? $anime['language'] : ''); ?>" placeholder="Japanese, Bangla Dub">
             </div>
             <div class="form-group">
                 <label>Slug (URL)</label>

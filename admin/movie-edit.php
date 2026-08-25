@@ -33,6 +33,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status       = isset($_POST['status']) ? $_POST['status'] : 'published';
     $featured     = isset($_POST['featured']) ? true : false;
     $genreArr     = isset($_POST['genres']) ? $_POST['genres'] : array();
+    $kind         = isset($_POST['kind']) && in_array($_POST['kind'], array('movie', 'series'), true) ? $_POST['kind'] : (isset($movie['kind']) ? $movie['kind'] : 'movie');
+    $altTitle     = isset($_POST['alternate_title']) ? trim($_POST['alternate_title']) : '';
+    $country      = isset($_POST['country']) ? trim($_POST['country']) : '';
+    $language     = isset($_POST['language']) ? trim($_POST['language']) : '';
+    $cast         = isset($_POST['cast']) ? trim($_POST['cast']) : '';
+    $director     = isset($_POST['director']) ? trim($_POST['director']) : '';
+    $subtitles    = isset($_POST['subtitles']) ? trim($_POST['subtitles']) : '';
+    $providers    = isset($_POST['legal_providers']) ? trim($_POST['legal_providers']) : '';
 
     if ($title === '') { $errors[] = 'Title is required.'; }
     if ($slug === '') { $slug = slugify($title); }
@@ -50,6 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         foreach ($movies as &$mm) {
             if ($mm['id'] === $id) {
                 $mm['title']        = $title;
+                $mm['alternate_title'] = $altTitle;
+                $mm['kind']         = $kind;
                 $mm['slug']         = $slug;
                 $mm['poster']       = $poster;
                 $mm['banner']       = $banner;
@@ -64,6 +74,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mm['stream_url']   = $stream_url;
                 $mm['download_url'] = $download_url;
                 $mm['featured']     = $featured;
+                $mm['country']      = $country;
+                $mm['language']     = $language;
+                $mm['cast']         = $cast;
+                $mm['director']     = $director;
+                $mm['subtitles']    = $subtitles;
+                $mm['legal_providers'] = $providers;
                 break;
             }
         }
@@ -127,8 +143,49 @@ include __DIR__ . '/header.php';
                 <input type="text" name="title" required value="<?php e(isset($movie['title']) ? $movie['title'] : ''); ?>">
             </div>
             <div class="form-group">
-                <label>Slug (URL)</label>
-                <input type="text" name="slug" value="<?php e(isset($movie['slug']) ? $movie['slug'] : ''); ?>">
+                <label>Alternate Title (Bangla/English)</label>
+                <input type="text" name="alternate_title" value="<?php e(isset($movie['alternate_title']) ? $movie['alternate_title'] : ''); ?>">
+            </div>
+        </div>
+
+        <div class="form-row-3">
+            <div class="form-group">
+                <label>Kind</label>
+                <select name="kind">
+                    <?php $k = isset($movie['kind']) ? $movie['kind'] : 'movie'; ?>
+                    <option value="movie" <?php echo $k === 'movie' ? 'selected' : ''; ?>>Movie</option>
+                    <option value="series" <?php echo $k === 'series' ? 'selected' : ''; ?>>Series</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Country</label>
+                <input type="text" name="country" value="<?php e(isset($movie['country']) ? $movie['country'] : ''); ?>">
+            </div>
+            <div class="form-group">
+                <label>Language</label>
+                <input type="text" name="language" value="<?php e(isset($movie['language']) ? $movie['language'] : ''); ?>">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Cast</label>
+                <input type="text" name="cast" value="<?php e(isset($movie['cast']) ? $movie['cast'] : ''); ?>">
+            </div>
+            <div class="form-group">
+                <label>Director</label>
+                <input type="text" name="director" value="<?php e(isset($movie['director']) ? $movie['director'] : ''); ?>">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Subtitles</label>
+                <input type="text" name="subtitles" value="<?php e(isset($movie['subtitles']) ? $movie['subtitles'] : ''); ?>" placeholder="Bangla, English">
+            </div>
+            <div class="form-group">
+                <label>Legal Watch Providers</label>
+                <input type="text" name="legal_providers" value="<?php e(isset($movie['legal_providers']) ? $movie['legal_providers'] : ''); ?>" placeholder="Netflix, Chorki, Hoichoi">
             </div>
         </div>
 

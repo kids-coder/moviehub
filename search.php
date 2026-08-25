@@ -9,31 +9,84 @@ $pageTitle = 'Search';
 $q = isset($_GET['q']) ? trim($_GET['q']) : '';
 $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $tab = isset($_GET['tab']) ? $_GET['tab'] : 'movies';
+$genre = isset($_GET['genre']) ? trim($_GET['genre']) : '';
+$year = isset($_GET['year']) ? trim($_GET['year']) : '';
+$lang = isset($_GET['lang']) ? trim($_GET['lang']) : '';
+$quality = isset($_GET['quality']) ? trim($_GET['quality']) : '';
+$sort = isset($_GET['sort']) ? $_GET['sort'] : 'relevance';
 
 $results = array();
 if ($q !== '') {
-    $ql = strtolower($q);
-    foreach (getPublishedMovies() as $m) {
-        $title = strtolower(isset($m['title']) ? $m['title'] : '');
-        if (strpos($title, $ql) !== false) {
-            $m['_type'] = 'movie';
-            $results['movies'][] = $m;
+    // Normalize punctuation so "spider-man-brand-new-day" matches "Spider-Man: Brand New Day"
+    $__norm = function ($s) { return preg_replace('/[^\p{L}\p{N}]+/u', ' ', strtolower(trim($s))); };
+    $ql = $__norm($q);
+    // Spelling tolerance: allow one character difference for words >= 5 chars
+    $fuzzy = function ($haystack) use ($ql) {
+        if ($ql === '') { return false; }
+        if (strpos($haystack, $ql) !== false) { return true; }
+        if (mb_strlen($ql, 'UTF-8') >= 5) {
+            foreach (preg_split('/\s+/u', $haystack) as $word) {
+                if (mb_strlen($word, 'UTF-8') >= 5 && levenshtein(mb_substr($word, 0, 255), mb_substr($ql, 0, 255)) <= 1) { return true; }
+            }
         }
+        return false;
+    };
+    foreach (getPublishedMovies() as $m) {
+        $title = $__norm(isset($m['title']) ? $m['title'] : '');
+        $alt   = $__norm(isset($m['alternate_title']) ? $m['alternate_title'] : '');
+        $cast  = $__norm(isset($m['cast']) ? $m['cast'] : '');
+        $dir   = $__norm(isset($m['director']) ? $m['director'] : '');
+        $match = $fuzzy($title) || ($alt !== '' && $fuzzy($alt)) || ($cast !== '' && strpos($cast, $ql) !== false) || ($dir !== '' && strpos($dir, $ql) !== false);
+        if (!$match) { continue; }
+        if ($genre !== '' && !(isset($m['genre']) && is_array($m['genre']) && in_array($genre, $m['genre']))) { continue; }
+        if ($year !== '' && (string)(isset($m['year']) ? $m['year'] : '') !== $year) { continue; }
+        if ($lang !== '' && strtolower((string)(isset($m['language']) ? $m['language'] : '')) !== strtolower($lang)) { continue; }
+        if ($quality !== '' && strtolower((string)(isset($m['quality']) ? $m['quality'] : '')) !== strtolower($quality)) { continue; }
+        $m['_type'] = 'movie';
+        $results['movies'][] = $m;
     }
     foreach (getPublishedAnime() as $a) {
-        $title = strtolower(isset($a['title']) ? $a['title'] : '');
-        if (strpos($title, $ql) !== false) {
-            $a['_type'] = 'anime';
-            $results['anime'][] = $a;
-        }
+        $title = $__norm(isset($a['title']) ? $a['title'] : '');
+        $alt   = $__norm(isset($a['alternate_title']) ? $a['alternate_title'] : '');
+        $match = $fuzzy($title) || ($alt !== '' && $fuzzy($alt));
+        if (!$match) { continue; }
+        if ($genre !== '' && !(isset($a['genre']) && is_array($a['genre']) && in_array($genre, $a['genre']))) { continue; }
+        if ($year !== '') { continue; } // anime uses 'aired', not a single year filter here
+        $a['_type'] = 'anime';
+        $results['anime'][] = $a;
     }
 }
 
 $movies = isset($results['movies']) ? $results['movies'] : array();
 $animeRes = isset($results['anime']) ? $results['anime'] : array();
 
+// Sorting
+$__sorters = array(
+    'newest' => function ($a, $b) { return strcmp(isset($b['created_at']) ? $b['created_at'] : '', isset($a['created_at']) ? $a['created_at'] : ''); },
+    'rating' => function ($a, $b) { return floatval(isset($b['rating']) ? $b['rating'] : 0) <=> floatval(isset($a['rating']) ? $a['rating'] : 0); },
+    'views'  => function ($a, $b) { return intval(isset($b['views']) ? $b['views'] : 0) <=> intval(isset($a['views']) ? $a['views'] : 0); },
+    'relevance' => null,
+);
+if (isset($__sorters[$sort]) && $__sorters[$sort] !== null) {
+    usort($movies, $__sorters[$sort]);
+    usort($animeRes, $__sorters[$sort]);
+}
+unset($__sorters);
+
+// Build year list from catalog
+$years = array();
+foreach (getPublishedMovies() as $m) {
+    if (!empty($m['year'])) { $years[(string)$m['year']] = true; }
+}
+$years = array_keys($years);
+rsort($years);
+
 $moviePag = paginate($movies, $page, 20);
 $animePag = paginate($animeRes, $page, 20);
+$qsBase = function ($overrides = array()) use ($q, $tab, $genre, $year, $lang, $quality, $sort) {
+    $params = array_filter(array_merge(array('q' => $q, 'tab' => $tab, 'genre' => $genre, 'year' => $year, 'lang' => $lang, 'quality' => $quality, 'sort' => $sort), $overrides), function ($v) { return $v !== '' && $v !== null; });
+    return BASE_URL . '/search.php?' . http_build_query($params);
+};
 
 include __DIR__ . '/header.php';
 ?>
@@ -47,9 +100,47 @@ include __DIR__ . '/header.php';
                        style="flex:1; padding:12px 16px; background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:var(--radius); outline:none;">
                 <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
             </div>
+            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; max-width:900px;">
+                <select name="genre" aria-label="Genre filter" style="padding:8px 10px; background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:6px;">
+                    <option value="">All Genres</option>
+                    <?php foreach (getAllGenres() as $g): ?><option value="<?php e($g); ?>" <?php echo $g === $genre ? 'selected' : ''; ?>><?php e($g); ?></option><?php endforeach; ?>
+                </select>
+                <select name="year" aria-label="Year filter" style="padding:8px 10px; background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:6px;">
+                    <option value="">All Years</option>
+                    <?php foreach ($years as $y): ?><option value="<?php e($y); ?>" <?php echo $y === $year ? 'selected' : ''; ?>><?php e($y); ?></option><?php endforeach; ?>
+                </select>
+                <select name="lang" aria-label="Language filter" style="padding:8px 10px; background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:6px;">
+                    <option value="">All Languages</option>
+                    <?php foreach (array('Bangla', 'Hindi', 'English', 'Korean', 'Japanese', 'Tamil', 'Telugu') as $l): ?>
+                        <option value="<?php e($l); ?>" <?php echo strcasecmp($l, $lang) === 0 ? 'selected' : ''; ?>><?php e($l); ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <select name="quality" aria-label="Quality filter" style="padding:8px 10px; background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:6px;">
+                    <option value="">Any Quality</option>
+                    <?php foreach (array('HD', 'FHD', '4K', 'CAM', 'TS', 'SD') as $qq): ?>
+                        <option value="<?php e($qq); ?>" <?php echo strcasecmp($qq, $quality) === 0 ? 'selected' : ''; ?>><?php e($qq); ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <select name="sort" aria-label="Sort results" style="padding:8px 10px; background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:6px;">
+                    <option value="relevance" <?php echo $sort === 'relevance' ? 'selected' : ''; ?>>Relevance</option>
+                    <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest</option>
+                    <option value="rating" <?php echo $sort === 'rating' ? 'selected' : ''; ?>>Rating</option>
+                    <option value="views" <?php echo $sort === 'views' ? 'selected' : ''; ?>>Most Viewed</option>
+                </select>
+            </div>
         </form>
 
         <?php if ($q !== ''): ?>
+            <?php
+            $__active = array_filter(array('genre' => $genre, 'year' => $year, 'lang' => $lang, 'quality' => $quality), function ($v) { return $v !== '' && $v !== null; });
+            if (!empty($__active)):
+            ?>
+            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;">
+                <?php foreach ($__active as $k => $v): ?>
+                    <a href="<?php echo htmlspecialchars($qsBase(array($k => '')), ENT_QUOTES, 'UTF-8'); ?>" class="genre-pill active" title="Remove filter"><?php e(ucfirst($k)); ?>: <?php e($v); ?> &times;</a>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
             <div class="search-tabs">
                 <a href="<?php e(BASE_URL); ?>/search.php?q=<?php echo urlencode($q); ?>&tab=movies" class="search-tab <?php echo $tab === 'movies' ? 'active' : ''; ?>">
                     Movies (<?php echo count($movies); ?>)
@@ -64,7 +155,12 @@ include __DIR__ . '/header.php';
                     <div class="empty-state">
                         <i class="fas fa-film"></i>
                         <h3>No Movies Found</h3>
-                        <p>Try a different search term.</p>
+                        <p>Try a different search term or remove some filters.</p>
+                        <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:12px;">
+                            <?php foreach (array_slice(getAllGenres(), 0, 6) as $g): ?>
+                                <a href="<?php echo htmlspecialchars($qsBase(array('genre' => $g, 'q' => '')), ENT_QUOTES, 'UTF-8'); ?>" class="genre-pill"><?php e($g); ?></a>
+                            <?php endforeach; ?>
+                        </div>
                     </div>
                 <?php else: ?>
                     <div class="card-grid">
@@ -94,7 +190,7 @@ include __DIR__ . '/header.php';
                             <?php if ($i == $moviePag['page']): ?>
                                 <span class="current"><?php echo $i; ?></span>
                             <?php else: ?>
-                                <a href="<?php e(BASE_URL); ?>/search.php?q=<?php echo urlencode($q); ?>&tab=movies&page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                                <a href="<?php echo htmlspecialchars($qsBase(array('page' => $i)), ENT_QUOTES, 'UTF-8'); ?>"><?php echo $i; ?></a>
                             <?php endif; ?>
                         <?php endfor; ?>
                     </div>
@@ -137,7 +233,7 @@ include __DIR__ . '/header.php';
                             <?php if ($i == $animePag['page']): ?>
                                 <span class="current"><?php echo $i; ?></span>
                             <?php else: ?>
-                                <a href="<?php e(BASE_URL); ?>/search.php?q=<?php echo urlencode($q); ?>&tab=anime&page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                                <a href="<?php echo htmlspecialchars($qsBase(array('page' => $i)), ENT_QUOTES, 'UTF-8'); ?>"><?php echo $i; ?></a>
                             <?php endif; ?>
                         <?php endfor; ?>
                     </div>

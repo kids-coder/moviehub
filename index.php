@@ -67,6 +67,20 @@ if (!empty($animeList)) {
 }
 $latestAnime = array_slice($animeList, 0, 10);
 
+// Popular in Bangladesh: Bangla-language or BD-region titles
+$popularBD = array();
+foreach ($movies as $m) {
+    $lang = strtolower(isset($m['language']) ? $m['language'] : '');
+    $country = strtolower(isset($m['country']) ? $m['country'] : '');
+    if (strpos($lang, 'bangla') !== false || strpos($lang, 'bengali') !== false || strpos($country, 'bangladesh') !== false) {
+        $popularBD[] = $m;
+    }
+}
+usort($popularBD, function ($a, $b) {
+    return intval(isset($b['views']) ? $b['views'] : 0) <=> intval(isset($a['views']) ? $a['views'] : 0);
+});
+$popularBD = array_slice($popularBD, 0, 10);
+
 include __DIR__ . '/header.php';
 outputWebsiteJsonLd();
 ?>
@@ -77,7 +91,7 @@ outputWebsiteJsonLd();
         <div class="hero-slide active" style="background-image: linear-gradient(135deg, #469AFF 0%, #9b59b6 100%);">
             <div class="hero-content">
                 <h1 class="hero-title">Welcome to BDMovieHub</h1>
-                <p style="font-size:18px;color:#fff;margin:12px 0 24px;opacity:0.9;">Free Movies &amp; Anime Streaming</p>
+                <p style="font-size:18px;color:#fff;margin:12px 0 24px;opacity:0.9;">Discover Bangla movies, series and anime</p>
                 <a href="<?php e(BASE_URL); ?>/search.php" class="hero-cta"><i class="fas fa-play"></i> Browse Movies</a>
             </div>
         </div>
@@ -282,6 +296,31 @@ outputWebsiteJsonLd();
                         <div class="card-meta">
                             <span><i class="far fa-calendar"></i> <?php e(isset($m['year']) ? $m['year'] : ''); ?></span>
                         </div>
+                    </div>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
+<!-- Popular in Bangladesh -->
+<?php if (!empty($popularBD)): ?>
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title"><i class="fas fa-map-marker-alt" style="color:#2ecc71; margin-right:6px;"></i> Popular in Bangladesh</h2>
+        </div>
+        <div class="scroll-row">
+            <?php foreach ($popularBD as $m): ?>
+                <a href="<?php e(BASE_URL); ?>/movie/<?php echo urlencode(isset($m['slug']) ? $m['slug'] : ''); ?>" class="movie-card">
+                    <div class="card-poster">
+                        <img src="<?php echo htmlspecialchars(isset($m['poster']) ? $m['poster'] : '', ENT_QUOTES, 'UTF-8'); ?>" alt="<?php e(isset($m['title']) ? $m['title'] : 'Movie'); ?>" loading="lazy">
+                        <?php if (!empty($m['quality'])): ?><span class="card-badge"><?php e($m['quality']); ?></span><?php endif; ?>
+                    </div>
+                    <div class="card-info">
+                        <div class="card-title"><?php e(isset($m['title']) ? $m['title'] : 'Untitled'); ?></div>
+                        <div class="card-meta"><span><i class="fas fa-eye"></i> <?php echo number_format(intval(isset($m['views']) ? $m['views'] : 0)); ?> views</span></div>
                     </div>
                 </a>
             <?php endforeach; ?>
