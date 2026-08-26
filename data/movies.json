@@ -16,11 +16,11 @@
         "quality": "HD",
         "status": "published",
         "trailer": "https://www.youtube.com/watch?v=xDCz9nHxOAQ",
-        "stream_url": "https://movie.ctgfun.com/disk1/English%20Movies/2026/SpiderMan-Brand%20New%20Day%20(2026)%201080p%20HDTS%20x264%20ESub%20%5bDDN%5d/SpiderMan-Brand%20New%20Day%20(2026)%201080p%20HDTS%20x264%20ESub%20%5bDDN%5d.mp4",
+        "stream_url": "https://player.abyssplayer.com/EOWGbfq9W",
         "download_url": "https://movie.ctgfun.com/disk1/English%20Movies/2026/Desert%20Warrior%20(2025)%20Hindi%20English%201080p%20WEBRip%20x264%20ESub%20%5BDDN%5D/Desert%20Warrior%20(2025)%20Hindi%20English%201080p%20WEBRip%20x264%20ESub%20%5bDDN%5d.mp4",
         "featured": true,
         "created_at": "2026-08-16",
-        "views": 54,
+        "views": 59,
         "alternate_title": "",
         "kind": "movie",
         "country": "",
@@ -28,7 +28,10 @@
         "cast": "",
         "director": "",
         "subtitles": "",
-        "legal_providers": ""
+        "legal_providers": "",
+        "alt_sources": [
+            "https://movie.ctgfun.com/disk1/English%20Movies/2026/SpiderMan-Brand%20New%20Day%20(2026)%201080p%20HDTS%20x264%20ESub%20%5bDDN%5d/SpiderMan-Brand%20New%20Day%20(2026)%201080p%20HDTS%20x264%20ESub%20%5bDDN%5d.mp4"
+        ]
     },
     {
         "id": "m2",
@@ -58,6 +61,6 @@
         "director": "",
         "subtitles": "",
         "legal_providers": "",
-        "views": 19
+        "views": 20
     }
 ]

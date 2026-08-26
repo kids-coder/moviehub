@@ -22,7 +22,10 @@ header('X-Frame-Options: SAMEORIGIN');
 header('X-XSS-Protection: 1; mode=block');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
-header("Content-Security-Policy: default-src 'self'; base-uri 'self'; form-action 'self'; img-src 'self' https: data:; media-src 'self' https: blob:; frame-src 'self' https://www.youtube.com https://player.vimeo.com https://www.dailymotion.com https://www.facebook.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com data:; connect-src 'self' https: wss:; object-src 'none'; upgrade-insecure-requests");
+// frame-src allows ANY https embed provider: admins add embed URLs from many
+// hosts (YouTube, Vimeo, Dailymotion, Facebook, player.abyssplayer.com, ...).
+// A whitelist here caused "This content is blocked" for every other provider.
+header("Content-Security-Policy: default-src 'self'; base-uri 'self'; form-action 'self'; img-src 'self' https: data:; media-src 'self' https: blob:; frame-src 'self' https:; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com data:; connect-src 'self' https: wss:; object-src 'none'; upgrade-insecure-requests");
 if ($__isHttps) {
     header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
 }

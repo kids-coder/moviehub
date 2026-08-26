@@ -334,8 +334,14 @@
             p2pSpeed: document.getElementById('p2pSpeed')
         };
 
-        initializeEventListeners();
+initializeEventListeners();
         buildSpeedOptions();
+
+        // Hide the PiP control where the API is unavailable
+        // (Firefox without flag, iOS Safari, older browsers).
+        if (!document.pictureInPictureEnabled && !document.webkitPictureInPictureEnabled) {
+            elements.pipBtn.style.display = 'none';
+        }
     }
 
     /* ========== Initialize Event Listeners ========== */
@@ -519,6 +525,7 @@
 
     function handleProgressSeek(e) {
         var video = elements.video;
+        if (!video.duration || !isFinite(video.duration)) return;
         var percent = parseFloat(e.target.value);
         video.currentTime = (percent / 100) * video.duration;
         elements.progressPlayed.style.width = percent + '%';
@@ -540,6 +547,7 @@
 
     function seekRelative(seconds) {
         var video = elements.video;
+        if (!video.duration || !isFinite(video.duration)) return;
         video.currentTime = Math.max(0, Math.min(video.duration, video.currentTime + seconds));
     }
 
@@ -801,6 +809,8 @@
     /* ========== Picture-in-Picture ========== */
     async function togglePiP() {
         var video = elements.video;
+        // Iframe mode: the premium <video> was replaced by the provider embed.
+        if (!video || !video.isConnected) return;
 
         try {
             if (document.pictureInPictureElement) {
@@ -835,8 +845,11 @@
 
     /* ========== Keyboard Shortcuts ========== */
     function handleKeyboardShortcuts(e) {
+        // Iframe mode: the premium <video> was replaced by the provider embed,
+        // whose own player handles its shortcuts — do nothing here.
+        if (!elements.video || !elements.video.isConnected) return;
         // Only when player is focused or visible
-        var container = elements.video ? elements.video.closest('.player-wrapper') : null;
+        var container = elements.video.closest('.player-wrapper');
         if (!container) return;
 
         var tag = e.target.tagName.toLowerCase();
@@ -933,6 +946,8 @@
 
     function handleError(e) {
         var video = elements.video;
+        // Iframe mode: ignore stale error events from the removed <video>
+        if (!video || !video.isConnected) return;
         var message = 'An error occurred during playback.';
 
         switch (video.error ? video.error.code : 0) {
@@ -1055,6 +1070,9 @@
 
     /* ========== HLS Player Builder ========== */
     function buildHlsPlayer(video, src) {
+        // Enable the backup-source chain for fatal HLS failures too
+        initSourceFallback(video);
+
         // Native HLS support (Safari, iOS)
         if (video.canPlayType('application/vnd.apple.mpegurl')) {
             video.src = src;
@@ -1123,8 +1141,11 @@
                             hls.recoverMediaError();
                             break;
                         default:
-                            showPlayerError('Fatal HLS error. Stream may be unavailable.');
                             hls.destroy();
+                            // Walk backup sources before showing the error overlay
+                            if (!tryNextSource()) {
+                                showPlayerError('Fatal HLS error. Stream may be unavailable.');
+                            }
                             break;
                     }
                 }
@@ -1169,10 +1190,15 @@
     }
 
     function setupVideoEvents(video) {
-        video.addEventListener('loadedmetadata', handleMetadata);
-        video.addEventListener('canplay', hideLoading);
-        video.addEventListener('error', handleError);
-        // Expose native <track> subtitle/caption tracks in the settings menu
+        // Core events (loadedmetadata/canplay/error) are ALREADY bound once in
+        // initializeEventListeners(). Binding them again here made every error
+        // fire twice, which skipped alternate sources during fallback.
+        exposeNativeSubtitles(video);
+        video.play().catch(function () {});
+    }
+
+    // Expose native <track> subtitle/caption tracks in the settings menu
+    function exposeNativeSubtitles(video) {
         video.addEventListener('loadedmetadata', function () {
             try {
                 var tracks = video.textTracks || [];
@@ -1202,7 +1228,6 @@
                 }
             } catch (e) { /* textTracks unsupported */ }
         });
-        video.play().catch(function() {});
     }
 
     /* ========== Iframe Player (Embed URLs) ========== */
@@ -1263,8 +1288,20 @@
             return;
         }
 
-        // Build premium UI
+        // Build premium UI.
+        // First preserve server-rendered <track> subtitle elements — the
+        // rebuild below replaces the original <video> (and its children).
+        var preservedTracks = [];
+        if (originalVideo) {
+            var __tr = originalVideo.querySelectorAll('track');
+            for (var __ti = 0; __ti < __tr.length; __ti++) {
+                preservedTracks.push(__tr[__ti].cloneNode(true));
+            }
+        }
         buildPremiumUI(container);
+        for (var __tj = 0; __tj < preservedTracks.length; __tj++) {
+            elements.video.appendChild(preservedTracks[__tj]);
+        }
 
         var detected = detectUrlType(src);
 
@@ -1290,7 +1327,9 @@
             }, 6000);
 
             elements.video.addEventListener('error', function() {
-                if (!fallbackFired) {
+                // Only swap to the iframe embed once the backup-source chain
+                // is exhausted (handleError walks it first).
+                if (!fallbackFired && sourceFallbackIndex >= sourceFallbackList.length - 1) {
                     fallbackFired = true;
                     clearTimeout(fallbackTimer);
                     buildIframePlayer(src);
