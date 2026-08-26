@@ -222,6 +222,20 @@ function hashPassword($password) {
     return password_hash($password, PASSWORD_DEFAULT);
 }
 
+/**
+ * Require the logged-in user to have the "admin" role.
+ * Editors are redirected back to the dashboard with an error flash.
+ */
+function requireAdmin() {
+    requireLogin();
+    $u = currentUser();
+    if (!$u || (isset($u['role']) ? $u['role'] : '') !== 'admin') {
+        setFlash('error', 'Admin access required.');
+        adminRedirect('index.php');
+    }
+    return $u;
+}
+
 function login($username, $password) {
     $users = getData(FILE_USERS);
     foreach ($users as $i => $u) {

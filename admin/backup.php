@@ -1,6 +1,7 @@
 <?php
 // BDMovieHub - Admin Backup / Restore
 require_once __DIR__ . '/../config.php';
+requireAdmin(); // Admin-only: full data access
 $adminPage = 'backup';
 $pageTitle = 'Backup & Restore';
 

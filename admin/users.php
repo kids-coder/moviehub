@@ -1,6 +1,7 @@
 <?php
 // BDMovieHub - Admin Users Manager
 require_once __DIR__ . '/../config.php';
+requireAdmin(); // Admin-only: user & role management
 $adminPage = 'users';
 $pageTitle = 'Users';
 
@@ -29,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $newUser = array(
                 'id'         => generateId($users, 'u'),
                 'username'   => $username,
-                'password'   => $password,
+                'password'   => hashPassword($password), // bcrypt, never plaintext
                 'role'       => $role,
                 'created_at' => date('Y-m-d'),
             );
@@ -46,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         foreach ($users as &$u) {
             if ($u['id'] === $uid) {
                 $u['username'] = $username;
-                if ($password !== '') { $u['password'] = $password; }
+                if ($password !== '') { $u['password'] = hashPassword($password); } // bcrypt on change
                 $u['role'] = $role;
                 break;
             }

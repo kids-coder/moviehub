@@ -18,6 +18,19 @@ $counts = array(
     'pages'    => count(getData(FILE_PAGES)),
 );
 
+// Pending-work badge for the Messages sidebar link
+$__menuPending = 0;
+foreach (getData(FILE_COMMENTS) as $__mc) {
+    if ((isset($__mc['status']) ? $__mc['status'] : 'pending') === 'pending') { $__menuPending++; }
+}
+if (file_exists(DATA_DIR . '/reports.json')) {
+    $__mraw = @file_get_contents(DATA_DIR . '/reports.json');
+    $__mdec = $__mraw ? json_decode($__mraw, true) : array();
+    if (is_array($__mdec)) {
+        foreach ($__mdec as $__mr) { if (!(isset($__mr['resolved']) && $__mr['resolved'])) { $__menuPending++; } }
+    }
+}
+
 // Admin URL prefix (BASE_URL + /admin)
 $adminUrl = BASE_URL . '/admin';
 
@@ -284,6 +297,9 @@ $faviconSvg = "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20
         <a href="<?php e($adminUrl); ?>/index.php" class="sidebar-link <?php echo $adminPage === 'dashboard' ? 'active' : ''; ?>">
             <i class="fas fa-tachometer-alt"></i> Dashboard
         </a>
+        <a href="<?php e($adminUrl); ?>/analytics.php" class="sidebar-link <?php echo $adminPage === 'analytics' ? 'active' : ''; ?>">
+            <i class="fas fa-chart-line"></i> Analytics
+        </a>
         <a href="<?php e($adminUrl); ?>/movies.php" class="sidebar-link <?php echo $adminPage === 'movies' ? 'active' : ''; ?>">
             <i class="fas fa-film"></i> Movies
         </a>
@@ -314,11 +330,14 @@ $faviconSvg = "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20
         </a>
         <a href="<?php e($adminUrl); ?>/comments.php" class="sidebar-link <?php echo $adminPage === 'comments' ? 'active' : ''; ?>">
             <i class="fas fa-comments"></i> Messages
+            <?php if ($__menuPending > 0): ?><span style="margin-left:auto; background:#e74c3c; color:#fff; font-size:10px; font-weight:700; padding:1px 7px; border-radius:10px;"><?php echo $__menuPending > 99 ? '99+' : $__menuPending; ?></span><?php endif; ?>
         </a>
         <a href="<?php e($adminUrl); ?>/requests.php" class="sidebar-link <?php echo $adminPage === 'requests' ? 'active' : ''; ?>">
             <i class="fas fa-inbox"></i> Title Requests
         </a>
         <div class="sidebar-section">System</div>
+        <?php $__isAdminUser = $user && (isset($user['role']) ? $user['role'] : '') === 'admin'; ?>
+        <?php if ($__isAdminUser): ?>
         <a href="<?php e($adminUrl); ?>/import.php" class="sidebar-link <?php echo $adminPage === 'import' ? 'active' : ''; ?>">
             <i class="fas fa-file-import"></i> Import
         </a>
@@ -334,6 +353,7 @@ $faviconSvg = "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20
         <a href="<?php e($adminUrl); ?>/users.php" class="sidebar-link <?php echo $adminPage === 'users' ? 'active' : ''; ?>">
             <i class="fas fa-users"></i> Users
         </a>
+        <?php endif; ?>
         <a href="<?php e($adminUrl); ?>/logout.php" class="sidebar-link">
             <i class="fas fa-sign-out-alt"></i> Logout
         </a>

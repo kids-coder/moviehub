@@ -20,5 +20,6 @@
     "analytics_code": "",
     "custom_css": "",
     "custom_js": "",
-    "auto_approve_comments": false
+    "auto_approve_comments": false,
+    "enable_lowdata": true
 }

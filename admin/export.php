@@ -1,6 +1,7 @@
 <?php
 // BDMovieHub - Admin Export (download all data as single JSON)
 require_once __DIR__ . '/../config.php';
+requireAdmin(); // Admin-only: full data download
 $adminPage = 'export';
 $pageTitle = 'Export Data';
 

@@ -1,6 +1,7 @@
 <?php
 // BDMovieHub - Admin Import (bulk JSON import)
 require_once __DIR__ . '/../config.php';
+requireAdmin(); // Admin-only: bulk data changes
 $adminPage = 'import';
 $pageTitle = 'Bulk Import';
 

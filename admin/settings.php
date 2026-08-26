@@ -1,6 +1,7 @@
 <?php
 // BDMovieHub - Admin Settings (enhanced with social, SEO, custom code)
 require_once __DIR__ . '/../config.php';
+requireAdmin(); // Admin-only: site-wide configuration
 $adminPage = 'settings';
 $pageTitle = 'Settings';
 

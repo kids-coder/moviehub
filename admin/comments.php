@@ -186,7 +186,7 @@ if (file_exists($reportsFile)) {
         <div class="data-table-wrap">
         <table class="data-table">
             <thead>
-                <tr><th>Date</th><th>Type</th><th>Item ID/Slug</th><th>Reason</th><th>Detail</th><th>Status</th></tr>
+                <tr><th>Date</th><th>Type</th><th>Item ID/Slug</th><th>Reason</th><th>Detail</th><th>Status</th><th>Actions</th></tr>
             </thead>
             <tbody>
                 <?php $reversed3 = array_reverse($reports); ?>
@@ -208,6 +208,24 @@ if (file_exists($reportsFile)) {
                         <?php else: ?>
                             <span style="color:#ffa502;">Open</span>
                         <?php endif; ?>
+                    </td>
+                    <td>
+                        <div class="table-actions">
+                            <form method="POST" action="<?php e($adminUrl); ?>/report-resolve.php" style="display:inline;">
+                                <?php echo csrfField(); ?>
+                                <input type="hidden" name="id" value="<?php echo htmlspecialchars(isset($r['id']) ? $r['id'] : '', ENT_QUOTES); ?>">
+                                <input type="hidden" name="action" value="<?php echo (isset($r['resolved']) && $r['resolved']) ? 'reopen' : 'resolve'; ?>">
+                                <button type="submit" class="btn-admin <?php echo (isset($r['resolved']) && $r['resolved']) ? 'btn-admin-outline' : 'btn-admin-success'; ?> btn-admin-sm" title="<?php echo (isset($r['resolved']) && $r['resolved']) ? 'Reopen' : 'Mark resolved'; ?>">
+                                    <i class="fas fa-<?php echo (isset($r['resolved']) && $r['resolved']) ? 'rotate-left' : 'check'; ?>"></i>
+                                </button>
+                            </form>
+                            <form method="POST" action="<?php e($adminUrl); ?>/comment-delete.php" style="display:inline;" onsubmit="return confirm('Delete this report?');">
+                                <?php echo csrfField(); ?>
+                                <input type="hidden" name="id" value="<?php echo htmlspecialchars(isset($r['id']) ? $r['id'] : '', ENT_QUOTES); ?>">
+                                <input type="hidden" name="type" value="report">
+                                <button type="submit" class="btn-admin btn-admin-danger btn-admin-sm" title="Delete"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 <?php endforeach; ?>
