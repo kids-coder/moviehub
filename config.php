@@ -22,7 +22,7 @@ header('X-Frame-Options: SAMEORIGIN');
 header('X-XSS-Protection: 1; mode=block');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
-// frame-src allows ANY https embed provider: admins add embed URLs from manyheader('Content-Security-Policy: default-src 'self'; frame-src 'self' https://player.abyssplayer.com; script-src 'self'; style-src 'self';');
+// frame-src allows ANY https embed provider: admins add embed URLs from many
 // hosts (YouTube, Vimeo, Dailymotion, Facebook, player.abyssplayer.com, ...).
 // A whitelist here caused "This content is blocked" for every other provider.
 
