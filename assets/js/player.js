@@ -1251,29 +1251,6 @@ initializeEventListeners();
         
         container.appendChild(iframe);
         hideLoading();
-
-        // Fallback overlay for slow loads
-        var loaded = false;
-        iframe.addEventListener('load', function() { loaded = true; });
-        setTimeout(function() {
-            if (!loaded && iframe.parentNode) {
-                var existing = container.querySelector('.iframe-fallback-overlay');
-                if (!existing) {
-                    var overlay = document.createElement('div');
-                    overlay.className = 'iframe-fallback-overlay';
-                    overlay.style.cssText =
-                        'position:absolute;bottom:12px;right:12px;z-index:8;' +
-                        'background:rgba(0,0,0,0.85);color:#fff;padding:8px 14px;border-radius:6px;' +
-                        'font-size:12px;display:flex;align-items:center;gap:8px;';
-                    overlay.innerHTML =
-                        '<span style="opacity:0.85;">Taking long?</span>' +
-                        '<a href="' + src + '" target="_blank" rel="noopener noreferrer" ' +
-                        'style="color:#469AFF;text-decoration:none;font-weight:600;">' +
-                        '<i class="fas fa-external-link-alt"></i> Open in new tab</a>';
-                    container.appendChild(overlay);
-                }
-            }
-        }, 20000);
     }
 
     /* ========== Main Initialization ========== */

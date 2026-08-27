@@ -2,13 +2,5 @@
     {
         "id": "a1",
         "type": "movie"
-    },
-    {
-        "id": "m1",
-        "type": "movie"
-    },
-    {
-        "id": "m2",
-        "type": "movie"
     }
 ]

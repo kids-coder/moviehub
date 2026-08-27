@@ -7,60 +7,16 @@
         "banner": "https://media.themoviedb.org/t/p/w600_and_h900_face/iPOn6DinuVyLY17YM9mKuPofV08.jpg",
         "description": "Fighting crime full-time as Spider-Man in a world that doesn't remember him—and the pressure of seeing his old friends move on without him—sparks a change in Peter Parker he may not have the power to control. But that transformation might also be the only thing that can stop a shocking new threat to the city and those he loves - a powerful villain no one can even see.",
         "year": "2026",
-        "genre": [
-            "Action",
-            "Adventure"
-        ],
+        "genre": [],
         "rating": "",
         "duration": "",
         "quality": "HD",
         "status": "published",
         "trailer": "https://www.youtube.com/watch?v=xDCz9nHxOAQ",
-        "stream_url": "https://player.abyssplayer.com/EOWGbfq9W",
+        "stream_url": "https://movie.ctgfun.com/disk1/English%20Movies/2026/SpiderMan-Brand%20New%20Day%20(2026)%201080p%20HDTS%20x264%20ESub%20%5bDDN%5d/SpiderMan-Brand%20New%20Day%20(2026)%201080p%20HDTS%20x264%20ESub%20%5bDDN%5d.mp4",
         "download_url": "https://movie.ctgfun.com/disk1/English%20Movies/2026/Desert%20Warrior%20(2025)%20Hindi%20English%201080p%20WEBRip%20x264%20ESub%20%5BDDN%5D/Desert%20Warrior%20(2025)%20Hindi%20English%201080p%20WEBRip%20x264%20ESub%20%5bDDN%5d.mp4",
         "featured": true,
         "created_at": "2026-08-16",
-        "views": 70,
-        "alternate_title": "",
-        "kind": "movie",
-        "country": "",
-        "language": "",
-        "cast": "",
-        "director": "",
-        "subtitles": "",
-        "legal_providers": "",
-        "alt_sources": [
-            "https://movie.ctgfun.com/disk1/English%20Movies/2026/SpiderMan-Brand%20New%20Day%20(2026)%201080p%20HDTS%20x264%20ESub%20%5bDDN%5d/SpiderMan-Brand%20New%20Day%20(2026)%201080p%20HDTS%20x264%20ESub%20%5bDDN%5d.mp4"
-        ]
-    },
-    {
-        "id": "m2",
-        "title": "h",
-        "alternate_title": "h",
-        "kind": "series",
-        "slug": "h",
-        "poster": "https://tse1.mm.bing.net/th/id/OIP.54bt0giPtlA7jF20sRdUTAAAAA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3",
-        "banner": "https://tse1.mm.bing.net/th/id/OIP.54bt0giPtlA7jF20sRdUTAAAAA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3",
-        "description": "",
-        "year": "2026",
-        "genre": [
-            "Action"
-        ],
-        "rating": "",
-        "duration": "",
-        "quality": "HD",
-        "status": "published",
-        "trailer": "",
-        "stream_url": "https://abyssplayer.com/IIkm9vJXv",
-        "download_url": "",
-        "featured": true,
-        "created_at": "2026-08-25",
-        "country": "bangladesh",
-        "language": "Bangla",
-        "cast": "",
-        "director": "",
-        "subtitles": "",
-        "legal_providers": "",
-        "views": 27
+        "views": 41
     }
 ]

@@ -504,16 +504,6 @@
     z-index: 7;
 }
 
-/* ---------- Iframe Fallback Overlay ---------- */
-.iframe-fallback-overlay {
-    color: #fff;
-    font-family: inherit;
-}
-
-.iframe-fallback-overlay a:hover {
-    text-decoration: underline;
-}
-
 /* ---------- Player Toast Notifications ---------- */
 .player-toast {
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);

@@ -1,7 +1,7 @@
 {
     "site_name": "BDMovieHub",
     "site_url": "https://bdmoviehub.gamer.gd",
-    "description": "Discover Bangla movies, series, anime, trailers, genres and the latest releases on BDMovieHub.",
+    "description": "Free Movies & Anime Streaming",
     "primary_color": "#469aff",
     "accent_color": "#ff6b6b",
     "anime_color": "#9b59b6",
@@ -20,6 +20,5 @@
     "analytics_code": "",
     "custom_css": "",
     "custom_js": "",
-    "auto_approve_comments": false,
-    "enable_lowdata": true
+    "auto_approve_comments": false
 }
