@@ -89,6 +89,28 @@
             errBox.classList.add('show');
             var p = errBox.querySelector('p');
             if (p && message) p.textContent = message;
+            // Append an "Open in new tab" escape hatch so users can still watch
+            // the video directly when the embed is blocked by the network or CSP.
+            var existing = errBox.querySelector('.player-error-open');
+            if (!existing) {
+                var src = (elements && elements.video && elements.video.dataset && elements.video.dataset.src)
+                    || (elements && elements.video && elements.video.src)
+                    || '';
+                // Pull from alt sources if main src is missing
+                if (!src && elements && elements.video && elements.video.dataset && elements.video.dataset.altSources) {
+                    var alts = String(elements.video.dataset.altSources).split('|').filter(Boolean);
+                    if (alts.length) src = alts[0];
+                }
+                if (src && /^https?:\/\//i.test(src)) {
+                    var link = document.createElement('a');
+                    link.className = 'player-error-open';
+                    link.href = src;
+                    link.target = '_blank';
+                    link.rel = 'noopener noreferrer';
+                    link.innerHTML = '<i class="fas fa-external-link-alt"></i> Open video in new tab';
+                    errBox.appendChild(link);
+                }
+            }
         }
         hideLoading();
         var v = document.getElementById('video-player');
@@ -948,14 +970,14 @@ initializeEventListeners();
         var video = elements.video;
         // Iframe mode: ignore stale error events from the removed <video>
         if (!video || !video.isConnected) return;
-        var message = 'An error occurred during playback.';
+        var message = 'Unable to load this video.';
 
         switch (video.error ? video.error.code : 0) {
-            case 1: message = 'Video loading aborted.'; break;
-            case 2: message = 'Network error. Check your connection.'; break;
-            case 3: message = 'Video decoding error.'; break;
-            case 4: message = 'Video format not supported.'; break;
-            default: message = 'Unable to load this video.'; break;
+            case 1: message = 'Video loading was cancelled.'; break;
+            case 2: message = 'Network error - the video host is unreachable.'; break;
+            case 3: message = 'This video file is corrupted or cannot be decoded.'; break;
+            case 4: message = 'This video format is not supported by your browser.'; break;
+            default: message = 'Unable to load this video. The source may be offline or blocked.'; break;
         }
 
         // Walk the fallback chain before giving up
@@ -1276,6 +1298,11 @@ initializeEventListeners();
             }
         }
         buildPremiumUI(container);
+        elements.video.dataset.src = src;
+        var originalAltSources = originalVideo ? originalVideo.getAttribute('data-alt-sources') : '';
+        if (originalAltSources) {
+            elements.video.dataset.altSources = originalAltSources;
+        }
         for (var __tj = 0; __tj < preservedTracks.length; __tj++) {
             elements.video.appendChild(preservedTracks[__tj]);
         }
