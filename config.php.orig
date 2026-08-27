@@ -22,10 +22,10 @@ header('X-Frame-Options: SAMEORIGIN');
 header('X-XSS-Protection: 1; mode=block');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
-// frame-src allows ANY https embed provider: admins add embed URLs from manyheader('Content-Security-Policy: default-src 'self'; frame-src 'self' https://player.abyssplayer.com; script-src 'self'; style-src 'self';');
+// frame-src allows ANY https embed provider: admins add embed URLs from many
 // hosts (YouTube, Vimeo, Dailymotion, Facebook, player.abyssplayer.com, ...).
 // A whitelist here caused "This content is blocked" for every other provider.
-
+header("Content-Security-Policy: default-src 'self'; base-uri 'self'; form-action 'self'; img-src 'self' https: data:; media-src 'self' https: blob:; frame-src 'self' https:; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com data:; connect-src 'self' https: wss:; object-src 'none'; upgrade-insecure-requests");
 if ($__isHttps) {
     header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
 }
@@ -185,20 +185,3 @@ if (!isset($_GET['slug']) && isset($_SERVER['REQUEST_URI'])) {
     }
     unset($__path);
 }
-
-
-// >>> MOVIEHUB CSP BEGIN (generated — do not edit by hand)
-// Embed-friendly CSP: allows third-party players (abyssplayer, YouTube, Vimeo,
-// Dailymotion, Facebook). 'https:' covers rotating embed CDN subdomains.
-header("Content-Security-Policy: "
-    . "default-src 'self'; "
-    . "script-src 'self' 'unsafe-inline' https:; "
-    . "style-src 'self' 'unsafe-inline'; "
-    . "img-src 'self' data: https:; "
-    . "media-src 'self' blob: https:; "
-    . "connect-src 'self' https:; "
-    . "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com "
-    . "https://player.vimeo.com https://www.dailymotion.com https://geo.dailymotion.com "
-    . "https://www.facebook.com https://player.abyssplayer.com https:; "
-    . "object-src 'none'; base-uri 'self'; form-action 'self'");
-// <<< MOVIEHUB CSP END

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MovieHub player self-test</title>
+<link rel="stylesheet" href="../assets/css/player.css">
+</head>
+<body>
+<h1>MovieHub player self-test</h1>
+<p>Source 1 is intentionally dead &rarr; player must fall back to Source 2 automatically.</p>
+
+<div id="movie-player" data-movie-player
+     data-sources='["/nonexistent/video.mp4","https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"]'>
+    <video controls preload="metadata" playsinline crossorigin="anonymous">
+        <track kind="subtitles" src="" srclang="en" label="English">
+    </video>
+</div>
+
+<button type="button" onclick="MovieHubPlayer.init(document.getElementById('movie-player')).seek(5)">
+    Seek to 0:05 immediately (tests queued-seek)
+</button>
+
+<script src="../assets/js/player.js"></script>
+</body>
+</html>

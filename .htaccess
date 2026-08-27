@@ -89,3 +89,11 @@ FileETag None
     Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; form-action 'self'; img-src 'self' https: data:; media-src 'self' https: blob:; frame-src 'self' https://www.youtube.com https://player.vimeo.com https://www.dailymotion.com https://www.facebook.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com data:; connect-src 'self' https: wss:; object-src 'none'; upgrade-insecure-requests"
     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" "expr=%{HTTPS} == 'on'"
 </IfModule>
+
+# >>> MOVIEHUB CSP (optional fallback for static hosts)
+# Uncomment ONLY if PHP does not send the header (e.g. static mirrors).
+# Sending it twice makes browsers intersect the policies and can break embeds.
+# <IfModule mod_headers.c>
+#     Header set Content-Security-Policy "frame-src 'self' https:; media-src 'self' blob: https:"
+# </IfModule>
+# <<< MOVIEHUB CSP
